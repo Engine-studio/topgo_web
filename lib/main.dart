@@ -4,7 +4,9 @@ import 'package:topgo_web/widgets/appbar.dart';
 
 late bool fullSize;
 
-void main() => runApp(WebApp());
+void main() {
+  runApp(WebApp());
+}
 
 class WebApp extends StatefulWidget {
   @override
