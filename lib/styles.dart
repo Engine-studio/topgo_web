@@ -56,7 +56,7 @@ class TxtStyle {
   static const TextStyle Text = const TextStyle(
     fontFamily: 'OpenSans',
     fontWeight: FontWeight.w400,
-    fontSize: 17,
+    fontSize: 15,
     color: ClrStyle.text,
   );
   static const TextStyle h2 = const TextStyle(

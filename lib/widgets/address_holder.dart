@@ -1,29 +1,27 @@
 import 'package:flutter/widgets.dart';
 
-//TODO: change text styles
-class AddressHolder extends StatelessWidget {
-  final String dist, address;
-  const AddressHolder({
+class TextHolder extends StatelessWidget {
+  final Alignment? placement;
+  final Text header, address;
+  const TextHolder({
     Key? key,
-    required this.dist,
+    required this.header,
     required this.address,
+    this.placement,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 60,
-          height: 45,
-          alignment: Alignment.topLeft,
-          child: Text(dist),
+          width: 85,
+          child: header,
         ),
+        SizedBox(width: 10),
         Expanded(
-          child: Container(
-            height: 45,
-            child: Text(address),
-          ),
+          child: address,
         ),
       ],
     );

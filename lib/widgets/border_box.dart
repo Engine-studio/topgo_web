@@ -28,7 +28,7 @@ class BorderBox extends StatelessWidget {
           width: width + borderWidth * 2,
           height: height != null ? height! + borderWidth * 2 : null,
           decoration: BoxDecoration(
-            gradient: gradient != null ? gradient : gradient,
+            gradient: gradient != null ? gradient : GrdStyle.lightPanel,
             borderRadius: BorderRadius.circular(6),
             boxShadow: borderWidth > 0
                 ? [BoxShadow(color: ClrStyle.dropShadow, blurRadius: 3)]

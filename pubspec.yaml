@@ -9,7 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^3.0.0
+  provider: ^5.0.0
+  http: ^0.13.3
+  flutter_map: ^0.13.1
+  latlong2: ^0.8.0
+  location: ^4.3.0
 
 dev_dependencies:
   flutter_test:
