@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
-import 'package:topgo_web/models/restaurant.dart';
-import 'package:topgo_web/widgets/grading_dialog.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:topgo_web/models/order.dart';
+import 'package:topgo_web/functions/map_indexed.dart';
+import 'package:topgo_web/styles.dart';
+import 'package:topgo_web/widgets/order_alert.dart';
+import 'package:topgo_web/widgets/map/map.dart' as topgo;
+import 'package:topgo_web/main.dart' as main;
+import 'package:topgo_web/widgets/search.dart';
 
 class AlertsTab extends StatefulWidget {
   const AlertsTab({Key? key}) : super(key: key);
@@ -12,21 +17,101 @@ class AlertsTab extends StatefulWidget {
 }
 
 class _AlertsTabState extends State<AlertsTab> {
+  int index = -1;
+  LatLng? center;
+  Widget? _widget;
+  List<Order> _orders = [];
+
+  @override
+  void initState() {
+    double _xSum = 0, _ySum = 0;
+    int _count = 0;
+    // TODO: implement initState
+    super.initState();
+    _orders = [1, 2, 3, 4, 5, 6, 7]
+        .map(
+          (i) => Order.shis(
+            i * 151,
+            i * 1000,
+            OrderStatus.Cooking,
+            'Courier Name',
+            "toAddr esstoAdd rasdasd" * i,
+          ),
+        )
+        .toList();
+    _orders.map((order) {
+      if (order.toLatLng != null) {
+        _count++;
+        _xSum += order.toLatLng!.latitude;
+        _ySum += order.toLatLng!.longitude;
+      }
+    });
+    if (_count > 0) this.center = LatLng(_xSum / _count, _ySum / _count);
+  }
+
+  void pick(int index) {
+    if (this.index != index) setState(() => {this.index = index});
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: GestureDetector(
-        onTap: () => showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (_) {
-            return ChangeNotifierProvider.value(
-              value: Provider.of<Restaurant>(context, listen: false),
-              child: GradingDialog(),
-            );
-          },
-        ),
-        child: Container(width: 100, height: 30, color: Colors.red),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: main.fullSize ? 30 : 24),
+      child: Column(
+        children: [
+          SizedBox(height: 24),
+          SearchLine(),
+          SizedBox(height: 24),
+          Expanded(
+            child: Container(
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: main.fullSize ? 475 : 350,
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: Wrap(
+                          runSpacing: 16,
+                          children: _orders
+                              .mapIndexed(
+                                (index, order) => GestureDetector(
+                                  onTap: () => pick(index),
+                                  child: OrderAlert(
+                                    order: order,
+                                    picked: this.index == index,
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: main.fullSize ? 641 : 378,
+                    child: Column(
+                      children: [
+                        if (_widget != null) Expanded(child: _widget!),
+                        if (_widget == null || main.fullSize)
+                          Expanded(
+                            child: Container(
+                              clipBehavior: Clip.hardEdge,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(9),
+                              ),
+                              margin: EdgeInsets.only(bottom: 12),
+                              child: topgo.Map(),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

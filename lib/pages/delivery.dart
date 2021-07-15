@@ -143,7 +143,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                     ],
                   ),
                 ),
-                SizedBox(width: 16),
+                SizedBox(width: 10),
                 Expanded(
                   flex: main.fullSize ? 564 : 300,
                   child: Container(

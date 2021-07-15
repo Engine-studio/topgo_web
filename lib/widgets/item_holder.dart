@@ -5,11 +5,14 @@ class ItemHolder extends StatelessWidget {
   final double? width;
   final String header;
   final Widget item;
+  final TextStyle? style;
+
   const ItemHolder({
     Key? key,
     required this.header,
     required this.item,
     this.width,
+    this.style,
   }) : super(key: key);
 
   @override
@@ -21,7 +24,7 @@ class ItemHolder extends StatelessWidget {
           width: width ?? 85,
           child: Text(
             header,
-            style: TxtStyle.H3,
+            style: style ?? TxtStyle.H3,
           ),
         ),
         SizedBox(width: 10),

@@ -23,7 +23,7 @@ class WebApp extends StatefulWidget {
 }
 
 class _WebAppState extends State<WebApp> {
-  int _index = 0;
+  int _index = 2;
 
   final tabs = [
     Center(child: Tab(icon: Icon(Icons.arrow_downward))),
