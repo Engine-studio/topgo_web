@@ -1,38 +1,49 @@
 import 'package:flutter/material.dart';
-//TODO: change text styles
+import 'package:topgo_web/styles.dart';
+import 'package:topgo_web/widgets/close_button.dart' as topgo;
 
 class DialogBox extends StatelessWidget {
-  final String title;
-  final double height;
-  final List<Widget> children;
-  final EdgeInsets padding;
+  final Widget child;
+  final double? height, width;
+  final EdgeInsets? padding;
+  final bool closeButton;
 
   const DialogBox({
     Key? key,
-    required this.title,
-    required this.height,
-    this.padding = const EdgeInsets.symmetric(vertical: 16, horizontal: 34),
-    required this.children,
+    this.width,
+    this.height,
+    this.padding,
+    required this.child,
+    this.closeButton = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(23)),
       child: Container(
         height: height,
-        width: double.infinity,
-        padding: this.padding,
+        width: width ?? double.infinity,
+        clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(6),
+          color: ClrStyle.lightBackground,
+          borderRadius: BorderRadius.circular(23),
         ),
-        child: Column(
+        child: Stack(
           children: [
-            Text(title),
-            SizedBox(height: 24),
-            ...children,
+            child,
+            if (closeButton)
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 16, right: 16),
+                    child: topgo.CloseButton(),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

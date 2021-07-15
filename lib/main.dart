@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topgo_web/models/restaurant.dart';
+import 'package:topgo_web/pages/alerts.dart';
 import 'package:topgo_web/pages/delivery.dart';
 import 'package:topgo_web/pages/profile.dart';
 import 'package:topgo_web/styles.dart';
@@ -27,7 +28,7 @@ class _WebAppState extends State<WebApp> {
   final tabs = [
     Center(child: Tab(icon: Icon(Icons.arrow_downward))),
     DeliveryTab(),
-    Center(child: Tab(icon: Icon(Icons.arrow_downward))),
+    AlertsTab(),
     ProfileTab(),
     Center(child: Tab(icon: Icon(Icons.arrow_back))),
     Center(child: Tab(icon: Icon(Icons.arrow_downward))),
