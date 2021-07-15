@@ -5,6 +5,7 @@ import 'package:topgo_web/pages/delivery.dart';
 import 'package:topgo_web/pages/profile.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/appbar.dart';
+import 'dart:js' as js;
 
 late bool fullSize;
 
@@ -24,15 +25,22 @@ class _WebAppState extends State<WebApp> {
   int _index = 0;
 
   final tabs = [
+    Center(child: Tab(icon: Icon(Icons.arrow_downward))),
     DeliveryTab(),
+    Center(child: Tab(icon: Icon(Icons.arrow_downward))),
     ProfileTab(),
+    Center(child: Tab(icon: Icon(Icons.arrow_back))),
     Center(child: Tab(icon: Icon(Icons.arrow_downward))),
     Center(child: Tab(icon: Icon(Icons.arrow_back))),
   ];
 
-  void switchOn(int index) => setState(() {
-        this._index = index;
-      });
+  void switchOn(int index) => {
+        if (index == 0)
+          js.context.callMethod('open', ['https://topgo.club', '_self']),
+        setState(() {
+          this._index = index;
+        })
+      };
 
   @override
   Widget build(BuildContext context) {

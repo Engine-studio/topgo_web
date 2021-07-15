@@ -14,6 +14,7 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<String> _list = ['Профиль', 'История заказов', 'Отчеты', 'Выход'];
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -71,8 +72,9 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
                     ),
                   ),
                   SizedBox(width: main.fullSize ? 80 : 40),
-                  GestureDetector(
-                    onTap: () => onTap(3),
+                  PopupMenuButton(
+                    padding: const EdgeInsets.all(0),
+                    offset: Offset(0, 35),
                     child: Row(
                       children: [
                         Image.asset('assets/icons/user-circle.png', height: 22),
@@ -83,6 +85,37 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
                         ),
                       ],
                     ),
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(color: ClrStyle.darkPanel),
+                      borderRadius: BorderRadius.vertical(
+                        bottom: Radius.circular(10),
+                      ),
+                    ),
+                    enabled: true,
+                    onSelected: (value) =>
+                        onTap(3 + (int.parse(value.toString()))),
+                    itemBuilder: (context) => _list
+                        .map(
+                          (str) => PopupMenuItem(
+                            value: _list.indexOf(str),
+                            child: Row(
+                              children: [
+                                Text(str, style: TxtStyle.H4),
+                                ...str == 'Выход'
+                                    ? [
+                                        SizedBox(width: 8),
+                                        Image.asset(
+                                          'assets/icons/log-in.png',
+                                          height: 20,
+                                          width: 20,
+                                        ),
+                                      ]
+                                    : [],
+                              ],
+                            ),
+                          ),
+                        )
+                        .toList(),
                   ),
                 ],
               ),
