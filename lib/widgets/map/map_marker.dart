@@ -14,7 +14,7 @@ class MapMarker {
   double? x, y;
   bool picked;
 
-  static LatLng get defaultCenter => LatLng(0, 0);
+  static LatLng get defaultCenter => LatLng(51.667627, 39.192717);
 
   MapMarker()
       : picked = false,
