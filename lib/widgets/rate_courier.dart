@@ -13,17 +13,29 @@ class RateCourier extends StatefulWidget {
   _RateCourierState createState() => _RateCourierState();
 }
 
-class _RateCourierState extends State<RateCourier> {
-  int? rateLook = 5;
-  int? rateTalk = 3;
+enum rateNames{
+  Look,
+  Talk
+}
 
-  Widget getStarsWidget(rate)
+class _RateCourierState extends State<RateCourier> {
+  List<int> rates = [0, 0];
+
+  Widget getStarsWidget(rateNames name)
   {
     List<Widget> list = List.empty(growable: true);
     for(var i = 0; i < 5; i++){    
-        if (i < rate)
-          list.add(new Image.asset("assets/icons/star-full.png", height: 19,),);
-        else list.add(new Image.asset("assets/icons/star.png", height: 19),);
+        if (i < rates[name.index])
+          list.add(new GestureDetector(
+            onTap: () => setState(() => rates[name.index] = i + 1),
+            child: Image.asset("assets/icons/star-full.png", height: 19,),
+          ),
+          );
+        else list.add(new GestureDetector(
+            onTap: () => setState(() => rates[name.index] = i + 1),
+            child: Image.asset("assets/icons/star.png", height: 19,),
+          ),
+        );
         if (i < 4) list.add(new SizedBox(width: 8,),);
     }
     return new Row(children: list);
@@ -32,61 +44,57 @@ class _RateCourierState extends State<RateCourier> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: BorderBox(
-        width: 415,
-        height: 258,
-        child: Container(
-          color: Colors.white,  
-          child: Padding(
-            padding: const EdgeInsets.only(top: 16, bottom: 16, left: 66, right: 67),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Оцените курьера",
-                      style: TxtStyle.H1.copyWith(fontSize: 24),
-                      )
-                  ],
-                ),
-                Spacer(flex: 40,),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                      Row(children: [
-                        Expanded(child: Text("Опрятность и внешений вид", style: TxtStyle.H3.copyWith(fontSize: 14),)),
-                        Expanded(child: getStarsWidget(rateLook)),
-                      ],),
-                      SizedBox(height: 16,),
-                      Row(children: [
-                        Expanded(child: Text("Культура речи и вежливость", style: TxtStyle.H3.copyWith(fontSize: 14),)),
-                        Expanded(child: getStarsWidget(rateTalk),
-                        ),
-                      ],)
-                  ],
-                ),
-                Spacer(flex: 40,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    SizedBox(
-                      width: 182,
-                      height: 38,
-                      child: Button(
-                        text: 'Оценить курьера',
-                        buttonType: ButtonType.Select,
-                        onPressed: () async => {},
+      child: Container(
+        color: Colors.white,  
+        child: Padding(
+          padding: const EdgeInsets.only(top: 16, bottom: 16, left: 66, right: 67),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Оцените курьера",
+                    style: TxtStyle.H1.copyWith(fontSize: 24),
+                    )
+                ],
+              ),
+              Spacer(flex: 40,),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                    Row(children: [
+                      Expanded(child: Text("Опрятность и внешений вид", style: TxtStyle.H3.copyWith(fontSize: 14),)),
+                      Expanded(child: getStarsWidget(rateNames.Look)),
+                    ],),
+                    SizedBox(height: 16,),
+                    Row(children: [
+                      Expanded(child: Text("Культура речи и вежливость", style: TxtStyle.H3.copyWith(fontSize: 14),)),
+                      Expanded(child: getStarsWidget(rateNames.Talk),
                       ),
+                    ],)
+                ],
+              ),
+              Spacer(flex: 40,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    width: 182,
+                    height: 38,
+                    child: Button(
+                      text: 'Оценить курьера',
+                      buttonType: ButtonType.Select,
+                      onPressed: () async => {},
                     ),
-                  ],
-                )
-                
-              ],
-            ),
+                  ),
+                ],
+              )
+              
+            ],
           ),
-        )
+        ),
       )
     );
   }
