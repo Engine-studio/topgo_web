@@ -1,22 +1,28 @@
+import 'package:extended_masked_text/extended_masked_text.dart';
 import 'package:flutter/material.dart';
-//TODO: change text styles
+import 'package:topgo_web/functions/money_string.dart';
+import 'package:topgo_web/styles.dart';
 
 class Input extends StatelessWidget {
-  final String text;
-  final TextEditingController controller;
-  final bool multilined;
+  final String? text;
+  final TextEditingController? controller;
+  final MaskedTextController? maskedController;
+  final bool multilined, money;
 
   const Input({
     Key? key,
-    required this.text,
-    required this.controller,
+    this.text,
+    this.controller,
+    this.maskedController,
     this.multilined = false,
+    this.money = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    double? tmp;
     return Container(
-      height: multilined ? 104 : 44,
+      height: multilined ? 58 : 29,
       decoration: BoxDecoration(
         color: Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(6),
@@ -27,17 +33,29 @@ class Input extends StatelessWidget {
           )
         ],
       ),
-      child: TextField(
-        controller: this.controller,
-        obscureText: this.text == 'Пароль',
-        //style: TxtStyle.selectedMainText,
-        cursorColor: Colors.black,
-        maxLines: multilined ? null : 1,
-        decoration: InputDecoration(
-          //hintStyle: TxtStyle.mainText,
-          hintText: this.text,
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 13),
+      child: Focus(
+        onFocusChange: (hasFocus) => {
+          if (money)
+            {
+              tmp = double.tryParse(controller!.text.replaceAll(' ', '')),
+              if (tmp != null) controller!.text = moneyString(tmp!, rub: false)
+            }
+        },
+        child: TextField(
+          controller: controller ?? maskedController,
+          obscureText: text != null && text == 'Пароль',
+          style: TxtStyle.H5,
+          cursorColor: Colors.black,
+          maxLines: multilined ? null : 1,
+          decoration: InputDecoration(
+            hintStyle: TxtStyle.H5.copyWith(
+              color: ClrStyle.text.withOpacity(0.7),
+            ),
+            hintText: text ?? '',
+            border: InputBorder.none,
+            isDense: true,
+            contentPadding: EdgeInsets.all(8),
+          ),
         ),
       ),
     );

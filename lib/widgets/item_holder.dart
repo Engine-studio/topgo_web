@@ -1,13 +1,15 @@
 import 'package:flutter/widgets.dart';
+import 'package:topgo_web/styles.dart';
 
-class TextHolder extends StatelessWidget {
-  final Alignment? placement;
-  final Text header, address;
-  const TextHolder({
+class ItemHolder extends StatelessWidget {
+  final double? width;
+  final String header;
+  final Widget item;
+  const ItemHolder({
     Key? key,
     required this.header,
-    required this.address,
-    this.placement,
+    required this.item,
+    this.width,
   }) : super(key: key);
 
   @override
@@ -16,12 +18,15 @@ class TextHolder extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 85,
-          child: header,
+          width: width ?? 85,
+          child: Text(
+            header,
+            style: TxtStyle.H3,
+          ),
         ),
         SizedBox(width: 10),
         Expanded(
-          child: address,
+          child: item,
         ),
       ],
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topgo_web/models/restaurant.dart';
+import 'package:topgo_web/pages/delivery.dart';
 import 'package:topgo_web/pages/profile.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/appbar.dart';
@@ -23,8 +24,8 @@ class _WebAppState extends State<WebApp> {
   int _index = 0;
 
   final tabs = [
+    DeliveryTab(),
     ProfileTab(),
-    Center(child: Tab(icon: Icon(Icons.arrow_forward))),
     Center(child: Tab(icon: Icon(Icons.arrow_downward))),
     Center(child: Tab(icon: Icon(Icons.arrow_back))),
   ];
@@ -40,7 +41,7 @@ class _WebAppState extends State<WebApp> {
       debugShowCheckedModeBanner: false,
       home: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxHeight < 550)
+          if (constraints.maxHeight < 650)
             return Center(
               child: Text('Screen is too small', style: TxtStyle.H1),
             );

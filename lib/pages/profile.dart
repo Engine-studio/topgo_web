@@ -6,7 +6,7 @@ import 'package:topgo_web/functions/time_string.dart';
 import 'package:topgo_web/main.dart' as main;
 import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/styles.dart';
-import 'package:topgo_web/widgets/address_holder.dart';
+import 'package:topgo_web/widgets/item_holder.dart';
 import 'package:topgo_web/widgets/map/map.dart';
 import 'package:topgo_web/widgets/map/map_marker.dart';
 
@@ -18,9 +18,9 @@ class ProfileTab extends StatelessWidget {
     Restaurant self = context.read<Restaurant>();
     return Column(
       children: [
-        SizedBox(height: 32),
+        SizedBox(height: 24),
         Text('Профиль', style: TxtStyle.H1),
-        SizedBox(height: 38),
+        SizedBox(height: 24),
         Expanded(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: main.fullSize ? 30 : 24),
@@ -52,28 +52,27 @@ class ProfileTab extends StatelessWidget {
                           style: TxtStyle.H1,
                         ),
                         Spacer(flex: 40),
-                        TextHolder(
-                          header: Text('Адрес:', style: TxtStyle.H3),
-                          address: Text(
+                        ItemHolder(
+                          header: 'Адрес:',
+                          item: Text(
                             self.address ?? 'No data',
                             style: TxtStyle.Text,
                           ),
                         ),
                         Spacer(flex: 16),
-                        TextHolder(
-                          header: Text('Время работы:', style: TxtStyle.H3),
-                          address: Text(
+                        ItemHolder(
+                          header: 'Время работы:',
+                          item: Text(
                             timeString(self.open ?? [0, 0]) +
                                 '  -  ' +
                                 timeString(self.close ?? [0, 0]),
                             style: TxtStyle.Text,
                           ),
-                          placement: Alignment.centerLeft,
                         ),
                         Spacer(flex: 16),
-                        TextHolder(
-                          header: Text('Телефон:', style: TxtStyle.H3),
-                          address: Text(
+                        ItemHolder(
+                          header: 'Телефон:',
+                          item: Text(
                             phoneString(self.phone ?? '00000000000'),
                             style: TxtStyle.Text,
                           ),

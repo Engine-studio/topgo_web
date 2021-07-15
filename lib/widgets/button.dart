@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:topgo_web/styles.dart';
-//TODO: change text styles
 
 enum ButtonType {
   Accept,
@@ -25,19 +24,12 @@ class Button extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ButtonState createState() =>
-      _ButtonState(this.text, this.buttonType, this.onPressed, this.filled);
+  _ButtonState createState() => _ButtonState();
 }
 
 class _ButtonState extends State<Button> with SingleTickerProviderStateMixin {
   late double _scale;
   late AnimationController _controller;
-  final String _text;
-  final ButtonType _buttonType;
-  final bool filled;
-  final void Function() onPressed;
-
-  _ButtonState(this._text, this._buttonType, this.onPressed, this.filled);
 
   @override
   void initState() {
@@ -55,13 +47,13 @@ class _ButtonState extends State<Button> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   void _tapUp(TapUpDetails details) {
     _controller.reverse();
-    onPressed();
+    widget.onPressed();
   }
 
   void _tapDown(TapDownDetails details) => _controller.forward();
@@ -69,12 +61,12 @@ class _ButtonState extends State<Button> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     _scale = 1 - _controller.value;
-    LinearGradient gradient = _buttonType == ButtonType.Accept
+    LinearGradient gradient = widget.buttonType == ButtonType.Accept
         ? GrdStyle.accept
-        : _buttonType == ButtonType.Decline
+        : widget.buttonType == ButtonType.Decline
             ? GrdStyle.decline
-            : _buttonType == ButtonType.Panel
-                ? GrdStyle.select //GrdStyle().panelGradient(context)
+            : widget.buttonType == ButtonType.Panel
+                ? GrdStyle.panel
                 : GrdStyle.select;
     return GestureDetector(
       onTapDown: _tapDown,
@@ -92,19 +84,23 @@ class _ButtonState extends State<Button> with SingleTickerProviderStateMixin {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6),
-              color: filled ? Colors.transparent : ClrStyle.lightBackground,
+              color:
+                  widget.filled ? Colors.transparent : ClrStyle.lightBackground,
             ),
             child: Center(
               child: ShaderMask(
-                shaderCallback: (bounds) => filled
+                shaderCallback: (bounds) => widget.filled
                     ? LinearGradient(colors: [
                         ClrStyle.lightBackground,
                         ClrStyle.lightBackground
                       ]).createShader(bounds)
                     : gradient.createShader(bounds),
-                child: Text(this._text
-                    //style: TxtStyle.button.copyWith(color: Color(0xFFFFFFFF)),
-                    ),
+                child: Text(
+                  widget.text,
+                  style: TxtStyle.H3.copyWith(
+                    color: Color(0xFFFFFFFF),
+                  ),
+                ),
               ),
             ),
           ),
