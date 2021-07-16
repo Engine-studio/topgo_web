@@ -74,7 +74,7 @@ class TxtStyle {
   static const TextStyle h4 = const TextStyle(
     fontFamily: 'Montserrat',
     fontWeight: FontWeight.w400,
-    fontSize: 14,
+    fontSize: 12,
     color: ClrStyle.text,
   );
   static const TextStyle Alert = const TextStyle(

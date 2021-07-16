@@ -5,6 +5,7 @@ import 'package:topgo_web/models/order.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/border_box.dart';
 import 'package:topgo_web/widgets/item_holder.dart';
+import 'package:topgo_web/main.dart' as main;
 
 class OrderAlert extends StatelessWidget {
   final Order order;
@@ -13,19 +14,26 @@ class OrderAlert extends StatelessWidget {
   const OrderAlert({Key? key, required this.order, this.picked = false})
       : super(key: key);
 
-  IconData getIconByStatus(int status) {
-    switch (status) {
-      case 0:
-        return Icons.star;
-      case 1:
-        return Icons.done;
-      case 2:
-        return Icons.not_interested;
-      case 3:
-        return Icons.zoom_in;
-      default:
-        return Icons.alarm;
-    }
+  String assetNameForStatus(OrderStatus? status) {
+    String _path = 'assets/icons/';
+    if (status == OrderStatus.CourierFinding ||
+        status == OrderStatus.CourierConfirmation)
+      _path += 'search';
+    else if (status == OrderStatus.Cooking ||
+        status == OrderStatus.ReadyForDelivery)
+      _path += 'history-alt';
+    else if (status == OrderStatus.Delivering)
+      _path += 'car';
+    else if (status == OrderStatus.Delivered)
+      _path += 'star';
+    else if (status == OrderStatus.FailureByCourier ||
+        status == OrderStatus.FailureByRestaurant)
+      _path += 'cancel';
+    else if (status == OrderStatus.Success)
+      _path += 'comment-verify';
+    else
+      _path += 'x';
+    return _path + '.png';
   }
 
   @override
@@ -50,28 +58,35 @@ class OrderAlert extends StatelessWidget {
                 height: 20,
                 child: Row(
                   children: [
-                    Icon(getIconByStatus(order.id! % 4)),
+                    Image.asset(assetNameForStatus(order.status), height: 20),
                     Spacer(flex: 10),
-                    Text('Номер заказа №${order.id}', style: TxtStyle.H2),
+                    Text(
+                      'Номер заказа №${order.id}',
+                      style: main.fullSize ? TxtStyle.H2 : TxtStyle.h2,
+                    ),
                     Spacer(flex: 137),
-                    Text(moneyString(order.sum ?? 0), style: TxtStyle.H2),
+                    Text(
+                      moneyString(order.sum ?? 0),
+                      style: main.fullSize ? TxtStyle.H2 : TxtStyle.h2,
+                    ),
                   ],
                 ),
               ),
               ItemHolder(
                 header: 'Курьер:',
-                style: TxtStyle.H4,
+                style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
                 item: Text(
                   order.courierName ?? 'No data',
-                  style: TxtStyle.H5,
+                  style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
                 ),
               ),
               ItemHolder(
                 header: 'Адрес:',
-                style: TxtStyle.H4,
+                style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
                 item: Text(
                   order.toAddress ?? 'No data',
-                  style: TxtStyle.H5,
+                  style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

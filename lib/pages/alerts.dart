@@ -7,6 +7,7 @@ import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/order_alert.dart';
 import 'package:topgo_web/widgets/map/map.dart' as topgo;
 import 'package:topgo_web/main.dart' as main;
+import 'package:topgo_web/widgets/order_details.dart';
 import 'package:topgo_web/widgets/search.dart';
 
 class AlertsTab extends StatefulWidget {
@@ -33,8 +34,14 @@ class _AlertsTabState extends State<AlertsTab> {
           (i) => Order.shis(
             i * 151,
             i * 1000,
-            OrderStatus.Cooking,
-            'Courier Name',
+            i % 4 == 0
+                ? OrderStatus.Cooking
+                : i % 4 == 1
+                    ? OrderStatus.Delivering
+                    : i % 4 == 2
+                        ? OrderStatus.Delivered
+                        : OrderStatus.CourierFinding,
+            'Константинов Абдурахмент Ибн Иль Амирович',
             "toAddr esstoAdd rasdasd" * i,
           ),
         )
@@ -50,7 +57,16 @@ class _AlertsTabState extends State<AlertsTab> {
   }
 
   void pick(int index) {
-    if (this.index != index) setState(() => {this.index = index});
+    if (this.index != index)
+      setState(() {
+        this.index = index;
+        _widget = OrderDetailsCard(order: _orders[index]);
+      });
+    else
+      setState(() {
+        this.index = -1;
+        _widget = null;
+      });
   }
 
   @override
@@ -67,7 +83,8 @@ class _AlertsTabState extends State<AlertsTab> {
               child: Row(
                 children: [
                   Expanded(
-                    flex: main.fullSize ? 475 : 350,
+                    //flex: main.fullSize ? 610 : 350,
+                    flex: 360,
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.only(right: 12),
@@ -89,11 +106,13 @@ class _AlertsTabState extends State<AlertsTab> {
                     ),
                   ),
                   Expanded(
-                    flex: main.fullSize ? 641 : 378,
+                    //flex: main.fullSize ? 641 : 378,
+                    flex: 378,
                     child: Column(
                       children: [
-                        if (_widget != null) Expanded(child: _widget!),
-                        if (_widget == null || main.fullSize)
+                        if (_widget != null) _widget!,
+                        if (_widget == null || main.fullSize) ...[
+                          if (_widget != null) SizedBox(height: 16),
                           Expanded(
                             child: Container(
                               clipBehavior: Clip.hardEdge,
@@ -104,6 +123,7 @@ class _AlertsTabState extends State<AlertsTab> {
                               child: topgo.Map(),
                             ),
                           ),
+                        ]
                       ],
                     ),
                   ),

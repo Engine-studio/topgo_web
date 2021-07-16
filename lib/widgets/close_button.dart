@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:topgo_web/styles.dart';
 
 class CloseButton extends StatelessWidget {
   const CloseButton({Key? key}) : super(key: key);
@@ -9,14 +10,18 @@ class CloseButton extends StatelessWidget {
     return Container(
       height: 30,
       width: 30,
-      child: Stack(children: [
-        Center(child: Image.asset("assets/icons/x.png"),),
-        Container(
-          height: 30,
-          width: 30,
-          decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.0)),
-        )
-      ],),
+      decoration: BoxDecoration(shape: BoxShape.circle),
+      clipBehavior: Clip.hardEdge,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.asset('assets/icons/x.png', width: 25),
+          Opacity(
+            opacity: 0.1,
+            child: Container(color: ClrStyle.icons),
+          ),
+        ],
+      ),
     );
   }
 }

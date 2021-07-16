@@ -17,14 +17,26 @@ enum OrderStatus {
 
 class Order {
   int? id, restaurantId, sessionId, total;
-  String? fromAddress, toAddress, courierName;
+  String? fromAddress,
+      toAddress,
+      courierName,
+      courierPhone,
+      clientPhone,
+      body,
+      comment;
   LatLng? fromLatLng, toLatLng;
   double? appearance, behavior, sum;
   List<int>? start, stop;
   OrderStatus? status;
   bool? withCash;
 
-  Order.shis(this.id, this.sum, this.status, this.courierName, this.toAddress);
+  Order.shis(this.id, this.sum, this.status, this.courierName, this.toAddress)
+      : clientPhone = '70123456789',
+        courierPhone = '79876543210' {
+    withCash = (id! % 3 == 1);
+    body = 'Sosiski v test; ' * 10;
+    comment = 'Sdelai horosho; ' * 10;
+  }
 
   Order.fromJson(Map<String, dynamic> json)
       : id = json['id'],

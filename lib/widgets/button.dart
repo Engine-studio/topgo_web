@@ -97,7 +97,7 @@ class _ButtonState extends State<Button> with SingleTickerProviderStateMixin {
                     : gradient.createShader(bounds),
                 child: Text(
                   widget.text,
-                  style: TxtStyle.H3.copyWith(
+                  style: TxtStyle.H4.copyWith(
                     color: Color(0xFFFFFFFF),
                   ),
                 ),

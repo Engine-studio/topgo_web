@@ -8,6 +8,7 @@ class BorderBox extends StatelessWidget {
   final bool selected;
   final double borderWidth;
   final LinearGradient? gradient;
+  final MainAxisSize? size;
 
   const BorderBox({
     Key? key,
@@ -17,12 +18,13 @@ class BorderBox extends StatelessWidget {
     this.selected = false,
     this.borderWidth = 1.5,
     this.gradient,
+    this.size,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: size ?? MainAxisSize.min,
       children: [
         Container(
           width: width + borderWidth * 2,
