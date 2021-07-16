@@ -3,12 +3,14 @@ import 'package:flutter/widgets.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:topgo_web/models/order.dart';
 import 'package:topgo_web/functions/map_indexed.dart';
+import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/order_alert.dart';
 import 'package:topgo_web/widgets/map/map.dart' as topgo;
 import 'package:topgo_web/main.dart' as main;
 import 'package:topgo_web/widgets/order_details.dart';
 import 'package:topgo_web/widgets/search.dart';
+import 'package:provider/provider.dart';
 
 class AlertsTab extends StatefulWidget {
   const AlertsTab({Key? key}) : super(key: key);
@@ -25,35 +27,18 @@ class _AlertsTabState extends State<AlertsTab> {
 
   @override
   void initState() {
-    double _xSum = 0, _ySum = 0;
-    int _count = 0;
+    // double _xSum = 0, _ySum = 0;
+    // int _count = 0;
     // TODO: implement initState
     super.initState();
-    _orders = [1, 2, 3, 4, 5, 6, 7]
-        .map(
-          (i) => Order.shis(
-            i * 151,
-            i * 1000,
-            i % 4 == 0
-                ? OrderStatus.Cooking
-                : i % 4 == 1
-                    ? OrderStatus.Delivering
-                    : i % 4 == 2
-                        ? OrderStatus.Delivered
-                        : OrderStatus.CourierFinding,
-            'Константинов Абдурахмент Ибн Иль Амирович',
-            "toAddr esstoAdd rasdasd" * i,
-          ),
-        )
-        .toList();
-    _orders.map((order) {
-      if (order.toLatLng != null) {
-        _count++;
-        _xSum += order.toLatLng!.latitude;
-        _ySum += order.toLatLng!.longitude;
-      }
-    });
-    if (_count > 0) this.center = LatLng(_xSum / _count, _ySum / _count);
+    // _orders.map((order) {
+    //   if (order.toLatLng != null) {
+    //     _count++;
+    //     _xSum += order.toLatLng!.latitude;
+    //     _ySum += order.toLatLng!.longitude;
+    //   }
+    // });
+    // if (_count > 0) this.center = LatLng(_xSum / _count, _ySum / _count);
   }
 
   void pick(int index) {
@@ -69,8 +54,14 @@ class _AlertsTabState extends State<AlertsTab> {
       });
   }
 
+  void setOrders(BuildContext context) {
+    this._orders = context.read<Restaurant>().shownOrders;
+  }
+
   @override
   Widget build(BuildContext context) {
+    _orders = context.watch<Restaurant>().shownOrders;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: main.fullSize ? 30 : 24),
       child: Column(
@@ -85,23 +76,18 @@ class _AlertsTabState extends State<AlertsTab> {
                   Expanded(
                     //flex: main.fullSize ? 610 : 350,
                     flex: 360,
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: Wrap(
-                          runSpacing: 16,
-                          children: _orders
-                              .mapIndexed(
-                                (index, order) => GestureDetector(
-                                  onTap: () => pick(index),
-                                  child: OrderAlert(
-                                    order: order,
-                                    picked: this.index == index,
-                                  ),
-                                ),
-                              )
-                              .toList(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: ListView.separated(
+                        itemCount: _orders.length,
+                        itemBuilder: (context, index) => GestureDetector(
+                          onTap: () => pick(index),
+                          child: OrderAlert(
+                            order: _orders[index],
+                            picked: this.index == index,
+                          ),
                         ),
+                        separatorBuilder: (_, __) => SizedBox(height: 16),
                       ),
                     ),
                   ),

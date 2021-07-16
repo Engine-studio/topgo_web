@@ -4,7 +4,7 @@ import 'package:topgo_web/styles.dart';
 class BorderBox extends StatelessWidget {
   final Widget child;
   final double width;
-  final double? height;
+  final double? height, borderRadius;
   final bool selected;
   final double borderWidth;
   final LinearGradient? gradient;
@@ -15,6 +15,7 @@ class BorderBox extends StatelessWidget {
     required this.child,
     this.height,
     this.width = double.infinity,
+    this.borderRadius,
     this.selected = false,
     this.borderWidth = 1.5,
     this.gradient,
@@ -31,7 +32,7 @@ class BorderBox extends StatelessWidget {
           height: height != null ? height! + borderWidth * 2 : null,
           decoration: BoxDecoration(
             gradient: gradient != null ? gradient : GrdStyle.lightPanel,
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(borderRadius ?? 9),
             boxShadow: borderWidth > 0
                 ? [BoxShadow(color: ClrStyle.dropShadow, blurRadius: 3)]
                 : [],
@@ -41,7 +42,7 @@ class BorderBox extends StatelessWidget {
             margin: EdgeInsets.all(borderWidth),
             decoration: BoxDecoration(
               color: Color(0xFFFFFFFF),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(borderRadius ?? 9),
             ),
             child: child,
           ),

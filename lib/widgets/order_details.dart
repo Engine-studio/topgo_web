@@ -3,18 +3,17 @@ import 'package:topgo_web/functions/money_string.dart';
 import 'package:topgo_web/functions/phone_string.dart';
 import 'package:topgo_web/main.dart' as main;
 import 'package:topgo_web/models/order.dart';
+import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/border_box.dart';
 import 'package:topgo_web/widgets/button.dart';
 import 'package:topgo_web/widgets/item_holder.dart';
 import 'package:topgo_web/widgets/order_state_line.dart';
+import 'package:provider/provider.dart';
 
 class OrderDetailsCard extends StatelessWidget {
   final Order order;
-  const OrderDetailsCard({
-    Key? key,
-    required this.order,
-  }) : super(key: key);
+  const OrderDetailsCard({Key? key, required this.order}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +129,9 @@ class OrderDetailsCard extends StatelessWidget {
                       child: Button(
                         text: 'Заказ готов',
                         buttonType: ButtonType.Accept,
-                        onPressed: () async => {},
+                        onPressed: () async => context
+                            .read<Restaurant>()
+                            .orderReady(context, order),
                       ),
                     ),
                   if (order.status == OrderStatus.Delivered &&

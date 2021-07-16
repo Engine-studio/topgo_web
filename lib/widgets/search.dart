@@ -1,21 +1,110 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:topgo_web/main.dart' as main;
+import 'package:topgo_web/models/restaurant.dart';
+import 'package:topgo_web/styles.dart';
+import 'package:topgo_web/widgets/border_box.dart';
 import 'package:topgo_web/widgets/button.dart';
 import 'package:topgo_web/widgets/input.dart';
+import 'package:provider/provider.dart';
 
-class SearchLine extends StatelessWidget {
+enum SearchType {
+  All,
+  Finding,
+  Cooking,
+  Delivering,
+  Done,
+}
+
+String toString(SearchType type) => type == SearchType.Finding
+    ? 'В поиске'
+    : type == SearchType.Cooking
+        ? 'Готовятся'
+        : type == SearchType.Delivering
+            ? 'Доставляются'
+            : type == SearchType.Done
+                ? 'Завершенные'
+                : 'Все';
+
+class SearchLine extends StatefulWidget {
   const SearchLine({Key? key}) : super(key: key);
 
   @override
+  _SearchLineState createState() => _SearchLineState();
+}
+
+class _SearchLineState extends State<SearchLine> {
+  late TextEditingController _controller;
+  SearchType type = SearchType.All;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    Restaurant self = context.read<Restaurant>();
     Widget spacer = SizedBox(width: main.fullSize ? 24 : 16);
     return SizedBox(
-      height: 38,
+      height: 32,
       child: Row(
         children: [
-          Flexible(child: Input(text: 'Введите запрос')),
+          Flexible(
+            child: BorderBox(
+              borderRadius: 4,
+              child: Input(
+                text: 'Введите запрос',
+                styling: false,
+                controller: _controller,
+                onSubmit: () => self.formShown(
+                  text: _controller.text,
+                  type: type,
+                ),
+              ),
+            ),
+          ),
           spacer,
-          Container(width: 190, color: Color(0xFF00FFF0)),
+          BorderBox(
+            borderRadius: 4,
+            width: 190,
+            child: DropdownButton<SearchType>(
+              isDense: true,
+              iconSize: 29,
+              isExpanded: true,
+              elevation: 0,
+              value: type,
+              items: <SearchType>[
+                SearchType.All,
+                SearchType.Finding,
+                SearchType.Cooking,
+                SearchType.Delivering,
+                SearchType.Done,
+              ].map((SearchType value) {
+                return DropdownMenuItem<SearchType>(
+                  value: value,
+                  child: Center(
+                    child: Text(
+                      toString(value),
+                      style: TxtStyle.Text,
+                    ),
+                  ),
+                );
+              }).toList(),
+              onChanged: (pushedValue) => {
+                setState(() {
+                  type = pushedValue!;
+                })
+              },
+            ),
+          ),
           spacer,
           SizedBox(
             width: 150,
@@ -23,7 +112,8 @@ class SearchLine extends StatelessWidget {
               text: 'Поиск',
               buttonType: ButtonType.Panel,
               //TODO: impl func
-              onPressed: () async => {},
+              onPressed: () async =>
+                  self.formShown(text: _controller.text, type: type),
             ),
           ),
         ],

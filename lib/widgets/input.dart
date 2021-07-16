@@ -5,9 +5,10 @@ import 'package:topgo_web/styles.dart';
 
 class Input extends StatelessWidget {
   final String? text;
+  final void Function()? onSubmit;
   final TextEditingController? controller;
   final MaskedTextController? maskedController;
-  final bool multilined, money;
+  final bool multilined, money, styling;
 
   const Input({
     Key? key,
@@ -16,6 +17,8 @@ class Input extends StatelessWidget {
     this.maskedController,
     this.multilined = false,
     this.money = false,
+    this.styling = true,
+    this.onSubmit,
   }) : super(key: key);
 
   @override
@@ -23,16 +26,18 @@ class Input extends StatelessWidget {
     double? tmp;
     return Container(
       height: multilined ? 58 : 29,
-      decoration: BoxDecoration(
-        color: Color(0xFFFFFFFF),
-        borderRadius: BorderRadius.circular(6),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF6A9DD9).withOpacity(0.15),
-            blurRadius: 3,
-          )
-        ],
-      ),
+      decoration: styling
+          ? BoxDecoration(
+              color: Color(0xFFFFFFFF),
+              borderRadius: BorderRadius.circular(6),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF6A9DD9).withOpacity(0.15),
+                  blurRadius: 3,
+                )
+              ],
+            )
+          : BoxDecoration(),
       child: Focus(
         onFocusChange: (hasFocus) => {
           if (money)
@@ -47,6 +52,7 @@ class Input extends StatelessWidget {
           style: TxtStyle.H5,
           cursorColor: Colors.black,
           maxLines: multilined ? null : 1,
+          onEditingComplete: onSubmit,
           decoration: InputDecoration(
             hintStyle: TxtStyle.H5.copyWith(
               color: ClrStyle.text.withOpacity(0.7),
