@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:topgo_web/functions/money_string.dart';
 import 'package:topgo_web/functions/phone_string.dart';
@@ -7,14 +8,25 @@ import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/border_box.dart';
 import 'package:topgo_web/widgets/button.dart';
+import 'package:topgo_web/widgets/grading_dialog.dart';
 import 'package:topgo_web/widgets/item_holder.dart';
 import 'package:topgo_web/widgets/order_state_line.dart';
 import 'package:provider/provider.dart';
 
-class OrderDetailsCard extends StatelessWidget {
+class OrderDetailsCard extends StatefulWidget {
   final Order order;
-  const OrderDetailsCard({Key? key, required this.order}) : super(key: key);
+  final void Function() removeSelf;
+  const OrderDetailsCard({
+    Key? key,
+    required this.order,
+    required this.removeSelf,
+  }) : super(key: key);
 
+  @override
+  _OrderDetailsCardState createState() => _OrderDetailsCardState();
+}
+
+class _OrderDetailsCardState extends State<OrderDetailsCard> {
   @override
   Widget build(BuildContext context) {
     return BorderBox(
@@ -23,11 +35,11 @@ class OrderDetailsCard extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              order.courierName!,
+              widget.order.courierName!,
               style: TxtStyle.H2,
             ),
             SizedBox(height: 8),
-            OrderStateLine(status: order.status),
+            OrderStateLine(status: widget.order.status),
             SizedBox(height: 16),
             Wrap(
               spacing: 24,
@@ -38,7 +50,7 @@ class OrderDetailsCard extends StatelessWidget {
                   style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
                   horizontal: false,
                   item: Text(
-                    '${order.id!}',
+                    '${widget.order.id!}',
                     style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
                     textAlign: TextAlign.center,
                   ),
@@ -48,7 +60,7 @@ class OrderDetailsCard extends StatelessWidget {
                   style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
                   horizontal: false,
                   item: Text(
-                    moneyString(order.sum ?? 0),
+                    moneyString(widget.order.sum ?? 0),
                     style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
                     textAlign: TextAlign.center,
                   ),
@@ -58,7 +70,7 @@ class OrderDetailsCard extends StatelessWidget {
                   style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
                   horizontal: false,
                   item: Text(
-                    order.withCash == true ? 'Наличные' : 'Терминал',
+                    widget.order.withCash == true ? 'Наличные' : 'Терминал',
                     style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
                     textAlign: TextAlign.center,
                   ),
@@ -68,7 +80,7 @@ class OrderDetailsCard extends StatelessWidget {
                   style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
                   horizontal: false,
                   item: Text(
-                    phoneString(order.courierPhone!),
+                    phoneString(widget.order.courierPhone!),
                     style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
                     textAlign: TextAlign.center,
                   ),
@@ -78,7 +90,7 @@ class OrderDetailsCard extends StatelessWidget {
                   style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
                   horizontal: false,
                   item: Text(
-                    phoneString(order.clientPhone!),
+                    phoneString(widget.order.clientPhone!),
                     style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
                     textAlign: TextAlign.center,
                   ),
@@ -90,7 +102,7 @@ class OrderDetailsCard extends StatelessWidget {
               header: 'Адрес:',
               style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
               item: Text(
-                order.toAddress ?? 'No data',
+                widget.order.toAddress ?? 'No data',
                 style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
               ),
             ),
@@ -99,7 +111,7 @@ class OrderDetailsCard extends StatelessWidget {
               header: 'Состав заказа:',
               style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
               item: Text(
-                order.body ?? 'No data',
+                widget.order.body ?? 'No data',
                 style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
               ),
             ),
@@ -109,7 +121,7 @@ class OrderDetailsCard extends StatelessWidget {
               width: 110,
               style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
               item: Text(
-                order.comment ?? 'No data',
+                widget.order.comment ?? 'No data',
                 style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
               ),
             ),
@@ -119,40 +131,62 @@ class OrderDetailsCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  ...order.status == OrderStatus.CourierFinding ||
-                          order.status == OrderStatus.CourierConfirmation
+                  ...widget.order.status == OrderStatus.CourierFinding ||
+                          widget.order.status == OrderStatus.CourierConfirmation
                       ? []
                       : [],
-                  if (order.status == OrderStatus.Cooking)
+                  if (widget.order.status == OrderStatus.Cooking)
                     SizedBox(
                       width: 155,
                       child: Button(
                         text: 'Заказ готов',
                         buttonType: ButtonType.Accept,
-                        onPressed: () async => context
+                        onPressed: () async => await context
                             .read<Restaurant>()
-                            .orderReady(context, order),
+                            .orderReady(context, widget.order),
                       ),
                     ),
-                  if (order.status == OrderStatus.Delivered &&
-                      order.appearance == null)
+                  if (widget.order.status == OrderStatus.Delivered &&
+                      widget.order.appearance == null)
                     Container(
                       width: 155,
                       child: Button(
                         text: 'Оценить заказ',
                         buttonType: ButtonType.Select,
-                        onPressed: () async => {},
+                        onPressed: () async => showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (_) {
+                            return ChangeNotifierProvider.value(
+                              value: Provider.of<Restaurant>(context,
+                                  listen: false),
+                              child: GradingDialog(
+                                rate: (context, list) async {
+                                  await context
+                                      .read<Restaurant>()
+                                      .orderRate(context, widget.order, list);
+                                  setState(() => {});
+                                },
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  if (order.status != OrderStatus.Delivered &&
-                      order.status != OrderStatus.Success)
+                  if (widget.order.status != OrderStatus.Delivered &&
+                      widget.order.status != OrderStatus.Success)
                     Container(
                       margin: const EdgeInsets.only(left: 24),
                       width: 155,
                       child: Button(
                         text: 'Отменить заказ',
                         buttonType: ButtonType.Decline,
-                        onPressed: () async => {},
+                        onPressed: () async => {
+                          await context
+                              .read<Restaurant>()
+                              .orderCancel(context, widget.order),
+                          widget.removeSelf(),
+                        },
                       ),
                     ),
                 ],

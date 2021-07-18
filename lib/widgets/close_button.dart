@@ -15,7 +15,7 @@ class CloseButton extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Image.asset('assets/icons/x.png', width: 25),
+          Image.asset('assets/icons/x.png', width: 15),
           Opacity(
             opacity: 0.1,
             child: Container(color: ClrStyle.icons),

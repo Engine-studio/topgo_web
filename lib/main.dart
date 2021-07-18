@@ -8,6 +8,8 @@ import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/appbar.dart';
 import 'dart:js' as js;
 
+import 'package:topgo_web/widgets/future_builder.dart';
+
 late bool fullSize;
 
 void main() => runApp(
@@ -24,24 +26,40 @@ class WebApp extends StatefulWidget {
 
 class _WebAppState extends State<WebApp> {
   int _index = 2;
-
-  final tabs = [
-    Center(child: Tab(icon: Icon(Icons.arrow_downward))),
-    DeliveryTab(),
-    AlertsTab(),
-    ProfileTab(),
-    Center(child: Tab(icon: Icon(Icons.arrow_back))),
-    Center(child: Tab(icon: Icon(Icons.arrow_downward))),
-    Center(child: Tab(icon: Icon(Icons.arrow_back))),
-  ];
+  bool needData = true;
 
   void switchOn(int index) => {
         if (index == 0)
           js.context.callMethod('open', ['https://topgo.club', '_self']),
         setState(() {
+          this.needData = true;
           this._index = index;
         })
       };
+
+  Widget currentTab() {
+    if (_index == 0) return Container();
+    if (!needData) {
+      return _index == 1
+          ? DeliveryTab()
+          : _index == 2
+              ? AlertsTab()
+              : _index == 3
+                  ? ProfileTab()
+                  : Container();
+    } else {
+      needData = false;
+      return TopGoFutureBuilder(
+        child: _index == 1
+            ? DeliveryTab()
+            : _index == 2
+                ? AlertsTab()
+                : _index == 3
+                    ? ProfileTab()
+                    : Container(),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +83,7 @@ class _WebAppState extends State<WebApp> {
               onTap: switchOn,
             ),
             body: SafeArea(
-              child: tabs[_index],
+              child: currentTab(),
             ),
           );
         },

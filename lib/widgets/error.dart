@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:topgo_web/styles.dart';
 
 class Error extends StatelessWidget {
   final String text;
@@ -6,6 +7,8 @@ class Error extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Center(
+      child: Text('Screen is too small', style: TxtStyle.H1),
+    );
   }
 }

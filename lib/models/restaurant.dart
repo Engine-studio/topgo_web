@@ -41,6 +41,8 @@ class Restaurant with ChangeNotifier {
         )
         .toList();
     shownOrders = orders;
+
+    formatShown();
   }
 
   void formShown({required String text, required SearchType type}) {
@@ -96,31 +98,48 @@ class Restaurant with ChangeNotifier {
           OrderStatus.Delivering,
           OrderStatus.ReadyForDelivery,
         ].contains(order.status)));
+    tmp.addAll(shownOrders.where((order) => [
+          OrderStatus.Delivered,
+        ].contains(order.status)));
     shownOrders = tmp;
 
     notifyListeners();
   }
 
-  void orderReady(BuildContext context, Order order) {
-    Order newOrder = order;
-    newOrder.status = OrderStatus.ReadyForDelivery;
+  Future<void> orderReady(BuildContext context, Order order) async {
     int ind = shownOrders.indexOf(order);
-    if (ind != -1) {
-      shownOrders.remove(order);
-      notifyListeners();
-      shownOrders.insert(ind, newOrder);
-    }
+    if (ind != -1) shownOrders[ind].status = OrderStatus.ReadyForDelivery;
     ind = orders.indexOf(order);
-    if (ind != -1) {
-      orders.remove(order);
-      notifyListeners();
-      orders.insert(ind, newOrder);
-    }
-    print('a');
+    if (ind != -1) orders[ind].status = OrderStatus.ReadyForDelivery;
 
     //TODO: impl api
     notifyListeners();
   }
+
+  Future<void> orderCancel(BuildContext context, Order order) async {
+    shownOrders.remove(order);
+    orders.remove(order);
+
+    //TODO: impl api
+    notifyListeners();
+  }
+
+  Future<void> orderRate(
+    BuildContext context,
+    Order order,
+    List<int> rating,
+  ) async {
+    int ind = shownOrders.indexOf(order);
+    if (ind != -1) shownOrders[ind].status = OrderStatus.Success;
+    ind = orders.indexOf(order);
+    if (ind != -1) orders[ind].status = OrderStatus.Success;
+
+    //TODO: impl api
+    notifyListeners();
+  }
+
+  int get alertsCount =>
+      orders.where((order) => order.status != OrderStatus.Success).length;
 
   LatLng? get location => x == null && y == null ? null : LatLng(x!, y!);
 }

@@ -111,7 +111,6 @@ class _SearchLineState extends State<SearchLine> {
             child: Button(
               text: 'Поиск',
               buttonType: ButtonType.Panel,
-              //TODO: impl func
               onPressed: () async =>
                   self.formShown(text: _controller.text, type: type),
             ),

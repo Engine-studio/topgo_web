@@ -45,7 +45,9 @@ class _AlertsTabState extends State<AlertsTab> {
     if (this.index != index)
       setState(() {
         this.index = index;
-        _widget = OrderDetailsCard(order: _orders[index]);
+        _widget = OrderDetailsCard(
+            order: _orders[index],
+            removeSelf: () => setState(() => {_widget = null}));
       });
     else
       setState(() {
@@ -54,14 +56,9 @@ class _AlertsTabState extends State<AlertsTab> {
       });
   }
 
-  void setOrders(BuildContext context) {
-    this._orders = context.read<Restaurant>().shownOrders;
-  }
-
   @override
   Widget build(BuildContext context) {
     _orders = context.watch<Restaurant>().shownOrders;
-
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: main.fullSize ? 30 : 24),
       child: Column(
@@ -74,8 +71,7 @@ class _AlertsTabState extends State<AlertsTab> {
               child: Row(
                 children: [
                   Expanded(
-                    //flex: main.fullSize ? 610 : 350,
-                    flex: 360,
+                    flex: main.fullSize ? 610 : 350,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 12),
                       child: ListView.separated(
@@ -92,8 +88,7 @@ class _AlertsTabState extends State<AlertsTab> {
                     ),
                   ),
                   Expanded(
-                    //flex: main.fullSize ? 641 : 378,
-                    flex: 378,
+                    flex: main.fullSize ? 641 : 378,
                     child: Column(
                       children: [
                         if (_widget != null) _widget!,

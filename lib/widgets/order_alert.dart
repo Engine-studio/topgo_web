@@ -11,7 +11,7 @@ class OrderAlert extends StatelessWidget {
   final Order order;
   final bool picked;
 
-  const OrderAlert({Key? key, required this.order, this.picked = false})
+  OrderAlert({Key? key, required this.order, this.picked = false})
       : super(key: key);
 
   String assetNameForStatus(OrderStatus? status) {
@@ -19,10 +19,10 @@ class OrderAlert extends StatelessWidget {
     if (status == OrderStatus.CourierFinding ||
         status == OrderStatus.CourierConfirmation)
       _path += 'search';
-    else if (status == OrderStatus.Cooking ||
-        status == OrderStatus.ReadyForDelivery)
+    else if (status == OrderStatus.Cooking)
       _path += 'history-alt';
-    else if (status == OrderStatus.Delivering)
+    else if (status == OrderStatus.Delivering ||
+        status == OrderStatus.ReadyForDelivery)
       _path += 'car';
     else if (status == OrderStatus.Delivered)
       _path += 'star';

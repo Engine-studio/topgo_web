@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/styles.dart';
+import 'package:provider/provider.dart';
 import 'package:topgo_web/main.dart' as main;
 
 class Appbar extends StatelessWidget with PreferredSizeWidget {
@@ -64,7 +66,14 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
                               Image.asset('assets/icons/alert_bg.png',
                                   height: 24),
                               Image.asset('assets/icons/alert.png', height: 24),
-                              Center(child: Text('14', style: TxtStyle.Alert)),
+                              Center(
+                                child: Text(
+                                    context
+                                        .watch<Restaurant>()
+                                        .alertsCount
+                                        .toString(),
+                                    style: TxtStyle.Alert),
+                              ),
                             ],
                           ),
                         ),
