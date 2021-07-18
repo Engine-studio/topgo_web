@@ -10,12 +10,12 @@ class Restaurant with ChangeNotifier {
   String? name, address, phone, password;
   List<int>? open, close;
 
-  late List<Order> orders, shownOrders;
+  late List<Order> orders, shownOrders, ordersHistory, shownOrdersHistory;
 
   Restaurant()
       : id = 0,
-        x = 55.75222,
-        y = 37.61556,
+        x = 51.667627,
+        y = 39.192717,
         name = 'RestautantNumberOne',
         address =
             'Pushkin street, Kukushkin house AND Pushkin street, Kukushkin house',
@@ -37,10 +37,39 @@ class Restaurant with ChangeNotifier {
                         : OrderStatus.CourierFinding,
             'Константинов Абдурахмент Ибн Иль Амирович',
             "toAddr esstoAdd rasdasd" * i,
+            LatLng(
+              51.669489 + (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.01,
+              39.156785 + (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.01,
+            ),
+            LatLng(
+              51.669489 - (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.006,
+              39.156785 + (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.006,
+            ),
           ),
         )
         .toList();
     shownOrders = orders;
+
+    ordersHistory = [1, 2, 3, 4, 5, 6, 7]
+        .map(
+          (i) => Order.shis(
+            i * 13,
+            i * 1250,
+            OrderStatus.Success,
+            'Константинов Абдурахмент Ибн Иль Амирович',
+            "toAddr esstoAdd rasdasd" * i,
+            LatLng(
+              51.669489 + (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.01,
+              39.156785 + (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.01,
+            ),
+            LatLng(
+              51.669489 - (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.006,
+              39.156785 + (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.006,
+            ),
+          ),
+        )
+        .toList();
+    shownOrdersHistory = ordersHistory;
 
     formatShown();
   }
@@ -79,6 +108,22 @@ class Restaurant with ChangeNotifier {
     );
 
     formatShown();
+  }
+
+  void formShownHistory({required String text}) {
+    shownOrdersHistory = ordersHistory;
+    shownOrdersHistory = List.from(
+      shownOrdersHistory.where(
+        (order) =>
+            order.courierName!.contains(text) ||
+            order.id!.toString().contains(text) ||
+            order.toAddress!.contains(text) ||
+            order.sum!.toString().contains(text) ||
+            moneyString(order.sum!).contains(text),
+      ),
+    );
+
+    notifyListeners();
   }
 
   void formatShown() {
@@ -130,9 +175,19 @@ class Restaurant with ChangeNotifier {
     List<int> rating,
   ) async {
     int ind = shownOrders.indexOf(order);
-    if (ind != -1) shownOrders[ind].status = OrderStatus.Success;
+    if (ind != -1) {
+      shownOrders[ind].status = OrderStatus.Success;
+      shownOrders[ind].appearance = rating[0] as double?;
+      shownOrders[ind].behavior = rating[1] as double?;
+    }
     ind = orders.indexOf(order);
-    if (ind != -1) orders[ind].status = OrderStatus.Success;
+    if (ind != -1) {
+      orders[ind].status = OrderStatus.Success;
+      orders[ind].appearance = rating[0] as double?;
+      orders[ind].behavior = rating[1] as double?;
+    }
+
+    ordersHistory.add(orders[ind]);
 
     //TODO: impl api
     notifyListeners();

@@ -189,6 +189,26 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                         },
                       ),
                     ),
+                  if (widget.order.status == OrderStatus.Success)
+                    Container(
+                      margin: const EdgeInsets.only(left: 24),
+                      alignment: Alignment.centerRight,
+                      height: 44,
+                      width: 155,
+                      child: Row(
+                        children: [
+                          Text(
+                            (((widget.order.behavior ?? 0) +
+                                        (widget.order.appearance ?? 0)) /
+                                    2)
+                                .toStringAsFixed(1),
+                            style: TxtStyle.H3,
+                          ),
+                          SizedBox(width: 10),
+                          Image.asset("assets/icons/star.png", height: 19),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),

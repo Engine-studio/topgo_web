@@ -10,6 +10,7 @@ enum Role {
 }
 
 class MapMarker {
+  int? id;
   Role role;
   double? x, y;
   bool picked;
@@ -26,26 +27,36 @@ class MapMarker {
         y = self.y,
         picked = false;
 
+  MapMarker.client(this.id, this.x, this.y, {this.picked = false})
+      : role = Role.Client;
+
+  MapMarker.courier(this.id, this.x, this.y, {this.picked = false})
+      : role = Role.Courier;
+
   LatLng get location => LatLng(x ?? 0, y ?? 0);
 
-  Widget get widget {
-    if (this.role == Role.Restaurant)
-      return Container(
+  Widget get widget => Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
-          color: Color(0xFFFFFFFF),
+          gradient: picked
+              ? GrdStyle.select
+              : LinearGradient(colors: [
+                  Color(0xFFFFFFFF),
+                  Color(0xFFFFFFFF),
+                ]),
         ),
         child: Center(
           child: Image.asset(
-            'assets/icons/store.png',
-            width: 20,
-            height: 20,
-            color: ClrStyle.icons,
+            role == Role.Restaurant
+                ? 'assets/icons/store.png'
+                : role == Role.Courier
+                    ? 'assets/icons/user.png'
+                    : 'assets/icons/home.png',
+            height: role == Role.Client ? 18 : 20,
+            color: picked ? Color(0xFFFFFFFF) : ClrStyle.icons,
           ),
         ),
       );
-    return Container();
-  }
 
   // SimpleCourier? courier;
   // Restaurant? restaurant;

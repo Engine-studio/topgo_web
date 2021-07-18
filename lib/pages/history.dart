@@ -11,14 +11,14 @@ import 'package:topgo_web/widgets/order_details.dart';
 import 'package:topgo_web/widgets/search.dart';
 import 'package:provider/provider.dart';
 
-class AlertsTab extends StatefulWidget {
-  const AlertsTab({Key? key}) : super(key: key);
+class OrdersHistoryTab extends StatefulWidget {
+  const OrdersHistoryTab({Key? key}) : super(key: key);
 
   @override
-  _AlertsTabState createState() => _AlertsTabState();
+  _OrdersHistoryTabState createState() => _OrdersHistoryTabState();
 }
 
-class _AlertsTabState extends State<AlertsTab> {
+class _OrdersHistoryTabState extends State<OrdersHistoryTab> {
   int index = -1;
   int? id;
   LatLng? center;
@@ -72,14 +72,14 @@ class _AlertsTabState extends State<AlertsTab> {
   @override
   Widget build(BuildContext context) {
     Restaurant self = context.read<Restaurant>();
-    _orders = context.watch<Restaurant>().shownOrders;
+    _orders = context.watch<Restaurant>().shownOrdersHistory;
     if (center == null) setCenter();
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: main.fullSize ? 30 : 24),
       child: Column(
         children: [
           SizedBox(height: 24),
-          SearchLine(),
+          SearchLine(history: true),
           SizedBox(height: 24),
           Expanded(
             child: Container(
@@ -117,27 +117,15 @@ class _AlertsTabState extends State<AlertsTab> {
                               ),
                               margin: EdgeInsets.only(bottom: 12),
                               child: topgo.Map(
-                                id: id,
                                 center: center,
-                                onTap: pickById,
                                 markers: [
                                   MapMarker.restaurant(self),
-                                  for (Order order in _orders)
-                                    if (order.status != OrderStatus.Delivered &&
-                                        order.status != OrderStatus.Success)
-                                      MapMarker.client(
-                                        order.id,
-                                        order.toLatLng!.latitude,
-                                        order.toLatLng!.longitude,
-                                      ),
-                                  for (Order order in _orders)
-                                    if (order.status != OrderStatus.Delivered &&
-                                        order.status != OrderStatus.Success)
-                                      MapMarker.courier(
-                                        order.id,
-                                        order.courierLatLng!.latitude,
-                                        order.courierLatLng!.longitude,
-                                      ),
+                                  if (index != -1)
+                                    MapMarker.client(
+                                      _orders[index].id,
+                                      _orders[index].toLatLng!.latitude,
+                                      _orders[index].toLatLng!.longitude,
+                                    ),
                                 ],
                               ),
                             ),

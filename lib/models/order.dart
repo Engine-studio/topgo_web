@@ -24,13 +24,14 @@ class Order {
       clientPhone,
       body,
       comment;
-  LatLng? fromLatLng, toLatLng;
+  LatLng? fromLatLng, toLatLng, courierLatLng;
   double? appearance, behavior, sum;
   List<int>? start, stop;
   OrderStatus? status;
   bool? withCash;
 
-  Order.shis(this.id, this.sum, this.status, this.courierName, this.toAddress)
+  Order.shis(this.id, this.sum, this.status, this.courierName, this.toAddress,
+      this.toLatLng, this.courierLatLng)
       : clientPhone = '70123456789',
         courierPhone = '79876543210' {
     withCash = (id! % 3 == 1);

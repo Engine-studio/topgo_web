@@ -27,7 +27,8 @@ String toString(SearchType type) => type == SearchType.Finding
                 : 'Все';
 
 class SearchLine extends StatefulWidget {
-  const SearchLine({Key? key}) : super(key: key);
+  final bool history;
+  const SearchLine({Key? key, this.history = false}) : super(key: key);
 
   @override
   _SearchLineState createState() => _SearchLineState();
@@ -64,55 +65,59 @@ class _SearchLineState extends State<SearchLine> {
                 text: 'Введите запрос',
                 styling: false,
                 controller: _controller,
-                onSubmit: () => self.formShown(
-                  text: _controller.text,
-                  type: type,
-                ),
+                onSubmit: () => !widget.history
+                    ? self.formShown(
+                        text: _controller.text,
+                        type: type,
+                      )
+                    : self.formShownHistory(text: _controller.text),
               ),
             ),
           ),
-          spacer,
-          BorderBox(
-            borderRadius: 4,
-            width: 190,
-            child: DropdownButton<SearchType>(
-              isDense: true,
-              iconSize: 29,
-              isExpanded: true,
-              elevation: 0,
-              value: type,
-              items: <SearchType>[
-                SearchType.All,
-                SearchType.Finding,
-                SearchType.Cooking,
-                SearchType.Delivering,
-                SearchType.Done,
-              ].map((SearchType value) {
-                return DropdownMenuItem<SearchType>(
-                  value: value,
-                  child: Center(
-                    child: Text(
-                      toString(value),
-                      style: TxtStyle.Text,
+          if (!widget.history) spacer,
+          if (!widget.history)
+            BorderBox(
+              borderRadius: 4,
+              width: 190,
+              child: DropdownButton<SearchType>(
+                isDense: true,
+                iconSize: 29,
+                isExpanded: true,
+                elevation: 0,
+                value: type,
+                items: <SearchType>[
+                  SearchType.All,
+                  SearchType.Finding,
+                  SearchType.Cooking,
+                  SearchType.Delivering,
+                  SearchType.Done,
+                ].map((SearchType value) {
+                  return DropdownMenuItem<SearchType>(
+                    value: value,
+                    child: Center(
+                      child: Text(
+                        toString(value),
+                        style: TxtStyle.Text,
+                      ),
                     ),
-                  ),
-                );
-              }).toList(),
-              onChanged: (pushedValue) => {
-                setState(() {
-                  type = pushedValue!;
-                })
-              },
+                  );
+                }).toList(),
+                onChanged: (pushedValue) => {
+                  setState(() {
+                    type = pushedValue!;
+                  })
+                },
+              ),
             ),
-          ),
           spacer,
           SizedBox(
             width: 150,
             child: Button(
               text: 'Поиск',
               buttonType: ButtonType.Panel,
-              onPressed: () async =>
-                  self.formShown(text: _controller.text, type: type),
+              onPressed: () async => !widget.history
+                  ? self.formShown(text: _controller.text, type: type)
+                  : self.formShownHistory(text: _controller.text),
             ),
           ),
         ],

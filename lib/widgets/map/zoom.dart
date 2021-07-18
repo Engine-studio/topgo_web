@@ -1,9 +1,8 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter/material.dart';
-import 'package:topgo_web/styles.dart';
 
-class CloseButton extends StatelessWidget {
-  const CloseButton({Key? key}) : super(key: key);
+class Zoom extends StatelessWidget {
+  final bool out;
+  const Zoom({Key? key, this.out = true}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +15,13 @@ class CloseButton extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           Opacity(
-            opacity: 0.1,
-            child: Container(color: ClrStyle.icons),
+            opacity: 0.8,
+            child: Container(color: Color(0xFFFFFFFF)),
           ),
-          Image.asset('assets/icons/x.png', width: 15),
+          Image.asset(
+            out ? 'assets/icons/minus.png' : 'assets/icons/plus.png',
+            width: 20,
+          ),
         ],
       ),
     );

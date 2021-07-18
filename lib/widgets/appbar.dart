@@ -16,7 +16,7 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> _list = ['Профиль', 'История заказов', 'Отчеты', 'Выход'];
+    List<String> _list = ['Профиль', 'История заказов', 'Выход'];
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
