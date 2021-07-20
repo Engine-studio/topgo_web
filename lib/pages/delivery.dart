@@ -152,7 +152,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                       borderRadius: BorderRadius.circular(9),
                     ),
                     child: Map(
-                      center: self.location,
+                      center: self.latLng,
                       markers: [MapMarker.restaurant(self)],
                     ),
                   ),

@@ -15,44 +15,77 @@ enum OrderStatus {
   Success
 }
 
+enum OrderPayment {
+  Terminal,
+  Cash,
+  Payed,
+}
+
+enum OrderFaultType {
+  ByRestaurant,
+  ByCourier,
+}
+
 class Order {
-  int? id, restaurantId, sessionId, total;
-  String? fromAddress,
-      toAddress,
-      courierName,
-      courierPhone,
-      clientPhone,
-      body,
-      comment;
-  LatLng? fromLatLng, toLatLng, courierLatLng;
-  double? appearance, behavior, sum;
-  List<int>? start, stop;
+  int? id, courierId;
+  String? toAddress, courierName, courierPhone, clientPhone, body, comment;
+  LatLng? toLatLng, courierLatLng;
+  double? rate, sum;
+  bool? big;
+  List<int>? cookingTime;
   OrderStatus? status;
-  bool? withCash;
-
-  Order.shis(this.id, this.sum, this.status, this.courierName, this.toAddress,
-      this.toLatLng, this.courierLatLng)
-      : clientPhone = '70123456789',
-        courierPhone = '79876543210' {
-    withCash = (id! % 3 == 1);
-    body = 'Sosiski v test; ' * 10;
-    comment = 'Sdelai horosho; ' * 10;
-  }
-
-  Order.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        restaurantId = json['restaurant_id'],
-        sessionId = json['session_id'],
-        total = json['coocking_time'],
-        //fromAddress = json['']
-        toAddress = json['delivery_address'],
-        //fromLatLng = json['']
-        toLatLng = LatLng(json['address_lat'], json['address_lng']),
-        withCash = json['method'] == 'Cash',
-        //appearance, behavior
-        start = parseNaiveDateTime(json['take_datetime']),
-        stop = parseNaiveDateTime(json['delivery_datetime']),
-        sum = json['courier_share'] / 100;
+  OrderPayment? paymentType;
 
   String get jsonID => jsonEncode({"id": id});
+
+  Order.fromJson(
+    Map<String, dynamic> json,
+    List<Map<String, dynamic>> coords,
+  )   : id = json['order_id'],
+        toAddress = json['delivery_address'],
+        courierName =
+            '${json['courier_surname']} ${json['courier_name']} ${json['courier_patronymic']}',
+        courierPhone = json['courier_phone'],
+        clientPhone = json['client_phone'],
+        body = json['details'],
+        comment = json['client_comment'],
+        toLatLng = LatLng(json['address_lat'], json['address_lng']),
+        rate = double.parse((double.parse(json['courier_rate_count'] ??
+                0 / json['courier_rate_amount'] ??
+                1)
+            .toStringAsFixed(2))),
+        sum = json['order_price'] / 100,
+        status = json['order_status'],
+        paymentType = json['method'],
+        cookingTime = parseNaiveTime(json['cooking_time']),
+        big = json['is_big_order'],
+        courierId = json['courier_id'] {
+    for (Map<String, dynamic> c in coords)
+      if (c['courier_id'] == json['courier_id']) {
+        courierLatLng = LatLng(c['lat'], c['lng']);
+        break;
+      }
+  }
+
+  Order.historyFromJson(Map<String, dynamic> json)
+      : id = json['order_id'],
+        toAddress = json['delivery_address'],
+        courierName =
+            '${json['courier_surname']} ${json['courier_name']} ${json['courier_patronymic']}',
+        courierPhone = json['courier_phone'],
+        clientPhone = json['client_phone'],
+        body = json['details'],
+        comment = json['client_comment'],
+        toLatLng = LatLng(json['address_lat'], json['address_lng']),
+        courierLatLng = null,
+        rate = double.parse((double.parse(json['courier_rate_count'] ??
+                0 / json['courier_rate_amount'] ??
+                1)
+            .toStringAsFixed(2))),
+        sum = json['order_price'] / 100,
+        status = json['order_status'],
+        paymentType = json['method'],
+        cookingTime = null,
+        big = null,
+        courierId = null;
 }

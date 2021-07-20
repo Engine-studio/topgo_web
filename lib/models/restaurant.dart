@@ -1,77 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:topgo_web/functions/money_string.dart';
+import 'package:topgo_web/functions/naive_time.dart';
 import 'package:topgo_web/models/order.dart';
 import 'package:topgo_web/widgets/search.dart';
 
 class Restaurant with ChangeNotifier {
+  bool logined;
   int? id;
-  double? x, y;
-  String? name, address, phone, password;
+  LatLng? latLng;
+  String? name, address, phone, password, token;
   List<int>? open, close;
 
-  late List<Order> orders, shownOrders, ordersHistory, shownOrdersHistory;
+  List<Order> orders = [],
+      shownOrders = [],
+      ordersHistory = [],
+      shownOrdersHistory = [];
 
-  Restaurant()
-      : id = 0,
-        x = 51.667627,
-        y = 39.192717,
-        name = 'RestautantNumberOne',
-        address =
-            'Pushkin street, Kukushkin house AND Pushkin street, Kukushkin house',
-        phone = '78005553535',
-        password = '123',
-        open = [10, 0],
-        close = [20, 0] {
-    orders = [1, 2, 3, 4, 5, 6, 7]
-        .map(
-          (i) => Order.shis(
-            i * 151,
-            i * 1000,
-            i % 4 == 0
-                ? OrderStatus.Cooking
-                : i % 4 == 1
-                    ? OrderStatus.Delivering
-                    : i % 4 == 2
-                        ? OrderStatus.Delivered
-                        : OrderStatus.CourierFinding,
-            'Константинов Абдурахмент Ибн Иль Амирович',
-            "toAddr esstoAdd rasdasd" * i,
-            LatLng(
-              51.669489 + (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.01,
-              39.156785 + (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.01,
-            ),
-            LatLng(
-              51.669489 - (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.006,
-              39.156785 + (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.006,
-            ),
-          ),
-        )
-        .toList();
-    shownOrders = orders;
+  Restaurant() : logined = false;
 
-    ordersHistory = [1, 2, 3, 4, 5, 6, 7]
-        .map(
-          (i) => Order.shis(
-            i * 13,
-            i * 1250,
-            OrderStatus.Success,
-            'Константинов Абдурахмент Ибн Иль Амирович',
-            "toAddr esstoAdd rasdasd" * i,
-            LatLng(
-              51.669489 + (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.01,
-              39.156785 + (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.01,
-            ),
-            LatLng(
-              51.669489 - (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.006,
-              39.156785 + (i % 2 == 0 ? 1 : -1) * (i + 1) * 0.006,
-            ),
-          ),
-        )
-        .toList();
-    shownOrdersHistory = ordersHistory;
+  Map<String, String> get loginData => {
+        'phone': phone ?? '',
+        'password': password ?? '',
+      };
 
+  void setLoginData(String phone, String password) {
+    this.phone = phone;
+    this.password = password;
+  }
+
+  void fromJson(Map<String, dynamic> json) {
+    token = json['jwt'];
+    json = json['restaurant'].cast < Map<String, dynamic>();
+    logined = false;
+    if (json['is_deleted']) return;
+    logined = true;
+    id = json['id'];
+    name = json['name'];
+    address = json['address'];
+    latLng = LatLng(json['location_lat'], json['location_lng']);
+    open = parseNaiveTime(json['working_from'][0]);
+    open = parseNaiveTime(json['working_till'][0]);
+  }
+
+  void setOrders(List<Order> orders) {
+    this.orders = orders;
+    this.shownOrders = this.orders;
     formatShown();
+  }
+
+  void setOrdersHistory(List<Order> orders) {
+    this.ordersHistory = orders;
+    this.shownOrdersHistory = this.orders;
+    notifyListeners();
   }
 
   void formShown({required String text, required SearchType type}) {
@@ -133,10 +114,6 @@ class Restaurant with ChangeNotifier {
           OrderStatus.CourierConfirmation
         ].contains(order.status)));
     tmp.addAll(shownOrders.where((order) => [
-          OrderStatus.FailureByCourier,
-          OrderStatus.FailureByRestaurant
-        ].contains(order.status)));
-    tmp.addAll(shownOrders.where((order) => [
           OrderStatus.Cooking,
         ].contains(order.status)));
     tmp.addAll(shownOrders.where((order) => [
@@ -177,14 +154,14 @@ class Restaurant with ChangeNotifier {
     int ind = shownOrders.indexOf(order);
     if (ind != -1) {
       shownOrders[ind].status = OrderStatus.Success;
-      shownOrders[ind].appearance = rating[0] as double?;
-      shownOrders[ind].behavior = rating[1] as double?;
+      shownOrders[ind].rate =
+          double.parse((rating[0] + rating[1] / 2).toStringAsFixed(2));
     }
     ind = orders.indexOf(order);
     if (ind != -1) {
       orders[ind].status = OrderStatus.Success;
-      orders[ind].appearance = rating[0] as double?;
-      orders[ind].behavior = rating[1] as double?;
+      orders[ind].rate =
+          double.parse((rating[0] + rating[1] / 2).toStringAsFixed(2));
     }
 
     ordersHistory.add(orders[ind]);
@@ -193,8 +170,11 @@ class Restaurant with ChangeNotifier {
     notifyListeners();
   }
 
-  int get alertsCount =>
-      orders.where((order) => order.status != OrderStatus.Success).length;
-
-  LatLng? get location => x == null && y == null ? null : LatLng(x!, y!);
+  int get alertsCount => orders
+      .where((order) => ![
+            OrderStatus.Success,
+            OrderStatus.FailureByCourier,
+            OrderStatus.FailureByRestaurant
+          ].contains(order.status))
+      .length;
 }

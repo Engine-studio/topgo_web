@@ -35,11 +35,12 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
         child: Column(
           children: [
             Text(
-              widget.order.courierName!,
+              widget.order.courierName ?? 'No data',
               style: TxtStyle.H2,
             ),
             SizedBox(height: 8),
-            OrderStateLine(status: widget.order.status),
+            OrderStateLine(
+                status: widget.order.status ?? OrderStatus.CourierFinding),
             SizedBox(height: 16),
             Wrap(
               spacing: 24,
@@ -50,7 +51,7 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                   style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
                   horizontal: false,
                   item: Text(
-                    '${widget.order.id!}',
+                    '${widget.order.id ?? "No data"}',
                     style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
                     textAlign: TextAlign.center,
                   ),
@@ -70,7 +71,11 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                   style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
                   horizontal: false,
                   item: Text(
-                    widget.order.withCash == true ? 'Наличные' : 'Терминал',
+                    widget.order.paymentType == OrderPayment.Cash
+                        ? 'Наличные'
+                        : widget.order.paymentType == OrderPayment.Terminal
+                            ? 'Терминал'
+                            : 'Оплачен',
                     style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
                     textAlign: TextAlign.center,
                   ),
@@ -80,7 +85,7 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                   style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
                   horizontal: false,
                   item: Text(
-                    phoneString(widget.order.courierPhone!),
+                    phoneString(widget.order.courierPhone ?? '00000000000'),
                     style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
                     textAlign: TextAlign.center,
                   ),
@@ -147,7 +152,7 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                       ),
                     ),
                   if (widget.order.status == OrderStatus.Delivered &&
-                      widget.order.appearance == null)
+                      widget.order.rate == 0)
                     Container(
                       width: 155,
                       child: Button(
@@ -198,10 +203,7 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                       child: Row(
                         children: [
                           Text(
-                            (((widget.order.behavior ?? 0) +
-                                        (widget.order.appearance ?? 0)) /
-                                    2)
-                                .toStringAsFixed(1),
+                            widget.order.rate.toString(),
                             style: TxtStyle.H3,
                           ),
                           SizedBox(width: 10),

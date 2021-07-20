@@ -23,8 +23,8 @@ class MapMarker {
 
   MapMarker.restaurant(Restaurant self)
       : role = Role.Restaurant,
-        x = self.x,
-        y = self.y,
+        x = self.latLng!.latitude,
+        y = self.latLng!.longitude,
         picked = false;
 
   MapMarker.client(this.id, this.x, this.y, {this.picked = false})

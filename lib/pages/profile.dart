@@ -35,7 +35,7 @@ class ProfileTab extends StatelessWidget {
                     ),
                     margin: EdgeInsets.only(left: main.fullSize ? 367 : 179),
                     child: Map(
-                      center: self.location,
+                      center: self.latLng,
                       markers: [MapMarker.restaurant(self)],
                     ),
                   ),

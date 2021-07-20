@@ -1,26 +1,32 @@
 import 'package:flutter/widgets.dart';
-import 'package:topgo_web/api/alerts.dart';
+import 'package:topgo_web/api.dart';
 import 'package:topgo_web/widgets/error.dart';
 import 'package:topgo_web/widgets/loading.dart';
 
 class TopGoFutureBuilder extends StatelessWidget {
   final Widget child;
-  final Future<void> Function()? future;
+  final Future<void> Function(BuildContext)? future;
   const TopGoFutureBuilder({
     Key? key,
     required this.child,
     this.future,
   }) : super(key: key);
 
+  Future<void> globalFuture(BuildContext context) async {
+    await getAlerts(context);
+    if (future != null) await future!(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getAlerts(context),
+      future: globalFuture(context),
       builder: (context, snapshot) {
-        if (snapshot.hasError) return Error(text: snapshot.error!.toString());
-        return snapshot.connectionState == ConnectionState.done
-            ? child
-            : Loading();
+        return snapshot.hasError
+            ? Error(text: snapshot.error!.toString())
+            : snapshot.connectionState == ConnectionState.done
+                ? child
+                : Loading();
       },
     );
   }
