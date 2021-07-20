@@ -8,6 +8,7 @@ import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/border_box.dart';
 import 'package:topgo_web/widgets/button.dart';
+import 'package:topgo_web/widgets/cancel_alert.dart';
 import 'package:topgo_web/widgets/grading_dialog.dart';
 import 'package:topgo_web/widgets/item_holder.dart';
 import 'package:topgo_web/widgets/order_state_line.dart';
@@ -73,7 +74,7 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                   item: Text(
                     widget.order.paymentType == OrderPayment.Cash
                         ? 'Наличные'
-                        : widget.order.paymentType == OrderPayment.Terminal
+                        : widget.order.paymentType == OrderPayment.Card
                             ? 'Терминал'
                             : 'Оплачен',
                     style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
@@ -186,12 +187,20 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                       child: Button(
                         text: 'Отменить заказ',
                         buttonType: ButtonType.Decline,
-                        onPressed: () async => {
-                          await context
-                              .read<Restaurant>()
-                              .orderCancel(context, widget.order),
-                          widget.removeSelf(),
-                        },
+                        onPressed: () async => showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (_) {
+                            return ChangeNotifierProvider.value(
+                              value: Provider.of<Restaurant>(context,
+                                  listen: false),
+                              child: CancelDialog(
+                                order: widget.order,
+                                onChoose: () => widget.removeSelf(),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   if (widget.order.status == OrderStatus.Success)

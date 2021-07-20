@@ -68,11 +68,12 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
                               Image.asset('assets/icons/alert.png', height: 24),
                               Center(
                                 child: Text(
-                                    context
-                                        .watch<Restaurant>()
-                                        .alertsCount
-                                        .toString(),
-                                    style: TxtStyle.Alert),
+                                  context
+                                      .watch<Restaurant>()
+                                      .alertsCount
+                                      .toString(),
+                                  style: TxtStyle.Alert,
+                                ),
                               ),
                             ],
                           ),

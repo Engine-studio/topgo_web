@@ -4,6 +4,7 @@ import 'package:topgo_web/functions/money_string.dart';
 import 'package:topgo_web/functions/naive_time.dart';
 import 'package:topgo_web/models/order.dart';
 import 'package:topgo_web/widgets/search.dart';
+import 'package:topgo_web/api.dart' as api;
 
 class Restaurant with ChangeNotifier {
   bool logined;
@@ -40,7 +41,7 @@ class Restaurant with ChangeNotifier {
     address = json['address'];
     latLng = LatLng(json['location_lat'], json['location_lng']);
     open = parseNaiveTime(json['working_from'][0]);
-    open = parseNaiveTime(json['working_till'][0]);
+    close = parseNaiveTime(json['working_till'][0]);
   }
 
   void unlogin() {
@@ -51,7 +52,7 @@ class Restaurant with ChangeNotifier {
     address = null;
     latLng = null;
     open = null;
-    open = null;
+    close = null;
   }
 
   void setOrders(List<Order> orders) {
@@ -140,20 +141,25 @@ class Restaurant with ChangeNotifier {
   }
 
   Future<void> orderReady(BuildContext context, Order order) async {
-    int ind = shownOrders.indexOf(order);
-    if (ind != -1) shownOrders[ind].status = OrderStatus.ReadyForDelivery;
-    ind = orders.indexOf(order);
-    if (ind != -1) orders[ind].status = OrderStatus.ReadyForDelivery;
+    try {
+      await api.setReadyForDelivery(context, order);
+      int ind = shownOrders.indexOf(order);
+      if (ind != -1) shownOrders[ind].status = OrderStatus.ReadyForDelivery;
+      ind = orders.indexOf(order);
+      if (ind != -1) orders[ind].status = OrderStatus.ReadyForDelivery;
+    } catch (e) {}
 
-    //TODO: impl api
     notifyListeners();
   }
 
-  Future<void> orderCancel(BuildContext context, Order order) async {
-    shownOrders.remove(order);
-    orders.remove(order);
+  Future<void> orderCancel(BuildContext context, Order order,
+      OrderFaultType type, String comment) async {
+    try {
+      await api.cancelOrder(context, order, type, comment);
+      shownOrders.remove(order);
+      orders.remove(order);
+    } catch (e) {}
 
-    //TODO: impl api
     notifyListeners();
   }
 
@@ -162,23 +168,29 @@ class Restaurant with ChangeNotifier {
     Order order,
     List<int> rating,
   ) async {
-    int ind = shownOrders.indexOf(order);
-    if (ind != -1) {
-      shownOrders[ind].status = OrderStatus.Success;
-      shownOrders[ind].rate =
-          double.parse((rating[0] + rating[1] / 2).toStringAsFixed(2));
-    }
-    ind = orders.indexOf(order);
-    if (ind != -1) {
-      orders[ind].status = OrderStatus.Success;
-      orders[ind].rate =
-          double.parse((rating[0] + rating[1] / 2).toStringAsFixed(2));
-    }
+    try {
+      await api.rateCourier(context, order, rating);
+      int ind = shownOrders.indexOf(order);
+      if (ind != -1) {
+        shownOrders[ind].status = OrderStatus.Success;
+        shownOrders[ind].rate =
+            double.parse((rating[0] + rating[1] / 2).toStringAsFixed(2));
+      }
+      ind = orders.indexOf(order);
+      if (ind != -1) {
+        orders[ind].status = OrderStatus.Success;
+        orders[ind].rate =
+            double.parse((rating[0] + rating[1] / 2).toStringAsFixed(2));
+      }
+    } catch (e) {}
 
-    ordersHistory.add(orders[ind]);
-
-    //TODO: impl api
     notifyListeners();
+  }
+
+  Future<void> createOrder(BuildContext context, Order order) async {
+    try {
+      await api.createOrder(context, order);
+    } catch (e) {}
   }
 
   int get alertsCount => orders

@@ -16,9 +16,9 @@ enum OrderStatus {
 }
 
 enum OrderPayment {
-  Terminal,
+  Card,
   Cash,
-  Payed,
+  AlreadyPayed,
 }
 
 enum OrderFaultType {
@@ -50,6 +50,19 @@ class Order {
     required this.deliverySum,
   });
 
+  String json(int restaurantId) => jsonEncode({
+        'restaurant_id': restaurantId,
+        'details': body,
+        'is_big_order': big,
+        'delivery_address': toAddress,
+        'method': paymentType.toString().replaceAll('OrderPayment.', ''),
+        'courier_share': (deliverySum! - 15) * 100,
+        'order_price': sum! * 100,
+        'cooking_time': toNaiveTime(cookingTime!),
+        'clientPhone': clientPhone,
+        'client_comment': comment,
+      });
+
   Order.fromJson(
     Map<String, dynamic> json,
     List<Map<String, dynamic>> coords,
@@ -67,8 +80,10 @@ class Order {
                 1)
             .toStringAsFixed(2))),
         sum = json['order_price'] / 100,
-        status = json['order_status'],
-        paymentType = json['method'],
+        status = OrderStatus.values.firstWhere(
+            (e) => e.toString() == 'OrderStatus.' + json['order_status']),
+        paymentType = OrderPayment.values.firstWhere(
+            (e) => e.toString() == 'OrderPayment.' + json['method']),
         cookingTime = parseNaiveTime(json['cooking_time']),
         big = json['is_big_order'],
         courierId = json['courier_id'] {
@@ -95,8 +110,10 @@ class Order {
                 1)
             .toStringAsFixed(2))),
         sum = json['order_price'] / 100,
-        status = json['order_status'],
-        paymentType = json['method'],
+        status = OrderStatus.values.firstWhere(
+            (e) => e.toString() == 'OrderStatus.' + json['order_status']),
+        paymentType = OrderPayment.values.firstWhere(
+            (e) => e.toString() == 'OrderPayment.' + json['method']),
         cookingTime = null,
         big = null,
         courierId = null;

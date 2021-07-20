@@ -31,7 +31,6 @@ class _DeliveryTabState extends State<DeliveryTab> {
 
   @override
   void initState() {
-    // TODO: implement initState, button function
     super.initState();
     sum = TextEditingController();
     body = TextEditingController();
@@ -102,8 +101,8 @@ class _DeliveryTabState extends State<DeliveryTab> {
                               payment = str == 'Наличные'
                                   ? OrderPayment.Cash
                                   : str == 'Терминал'
-                                      ? OrderPayment.Terminal
-                                      : OrderPayment.Payed;
+                                      ? OrderPayment.Card
+                                      : OrderPayment.AlreadyPayed;
                             }
                           },
                         ),

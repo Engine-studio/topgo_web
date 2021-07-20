@@ -8,6 +8,7 @@ import 'package:topgo_web/widgets/loading.dart';
 class TopGoFutureBuilder extends StatelessWidget {
   final Widget child;
   final Future<void> Function(BuildContext)? future;
+
   const TopGoFutureBuilder({
     Key? key,
     required this.child,
@@ -15,7 +16,7 @@ class TopGoFutureBuilder extends StatelessWidget {
   }) : super(key: key);
 
   Future<void> globalFuture(BuildContext context) async {
-    // await getAlerts(context);
+    await getAlerts(context);
     if (future != null) await future!(context);
   }
 
@@ -27,7 +28,8 @@ class TopGoFutureBuilder extends StatelessWidget {
         return snapshot.hasError
             ? Error(
                 text: jsonDecode(
-                    snapshot.error.toString().replaceFirst('Exception: ', '')),
+                  snapshot.error.toString().replaceFirst('Exception: ', ''),
+                ),
               )
             : snapshot.connectionState == ConnectionState.done
                 ? child

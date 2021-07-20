@@ -2,6 +2,7 @@ import 'package:extended_masked_text/extended_masked_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topgo_web/api.dart';
+import 'package:topgo_web/models/order.dart';
 import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/pages/alerts.dart';
 import 'package:topgo_web/pages/delivery.dart';
@@ -19,9 +20,13 @@ import 'package:topgo_web/widgets/input.dart';
 late bool fullSize;
 
 void main() => runApp(
-      ChangeNotifierProvider<Restaurant>(
-        create: (context) => Restaurant(),
-        child: LoginPage(),
+      MaterialApp(
+        title: 'TopGo',
+        debugShowCheckedModeBanner: false,
+        home: ChangeNotifierProvider<Restaurant>(
+          create: (_) => Restaurant(),
+          child: LoginPage(),
+        ),
       ),
     );
 
@@ -31,7 +36,7 @@ class WebApp extends StatefulWidget {
 }
 
 class _WebAppState extends State<WebApp> {
-  int _index = 2;
+  int _index = 3;
   bool needData = true;
 
   void switchOn(int index, BuildContext context) => {
@@ -40,9 +45,16 @@ class _WebAppState extends State<WebApp> {
         if (index == 5)
           {
             context.read<Restaurant>().unlogin(),
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => LoginPage()),
+              MaterialPageRoute(
+                builder: (_) {
+                  return ChangeNotifierProvider<Restaurant>(
+                    create: (_) => Restaurant(),
+                    child: LoginPage(),
+                  );
+                },
+              ),
             ),
           }
         else
@@ -79,13 +91,27 @@ class _WebAppState extends State<WebApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: Appbar(
-        onTap: switchOn,
-      ),
-      body: SafeArea(
-        child: currentTab(),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxHeight < 650)
+          return Center(
+            child: Text('Screen is too small', style: TxtStyle.H1),
+          );
+        if (constraints.maxWidth < 768)
+          return Center(
+            child: Text('Screen is too small', style: TxtStyle.H1),
+          );
+        fullSize =
+            !(constraints.maxWidth >= 768 && constraints.maxWidth < 1200);
+        return Scaffold(
+          appBar: Appbar(
+            onTap: switchOn,
+          ),
+          body: SafeArea(
+            child: currentTab(),
+          ),
+        );
+      },
     );
   }
 }
@@ -115,66 +141,63 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  Future<void> submit(BuildContext context) async {
+    print(OrderStatus.Cooking.toString());
+    String number = phone.text;
+    for (String str in ['+', '(', ')', '-', ' '])
+      number = number.replaceAll(str, '');
+    if (number.length == 11 && password.text != '') {
+      context.read<Restaurant>().setLoginData(number, password.text);
+      if (await logIn(context))
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) {
+              return ChangeNotifierProvider.value(
+                value: Provider.of<Restaurant>(context, listen: false),
+                child: WebApp(),
+              );
+            },
+          ),
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    String number;
-    return MaterialApp(
-      title: 'TopGo',
-      debugShowCheckedModeBanner: false,
-      home: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxHeight < 650)
-            return Center(
-              child: Text('Screen is too small', style: TxtStyle.H1),
-            );
-          if (constraints.maxWidth < 768)
-            return Center(
-              child: Text('Screen is too small', style: TxtStyle.H1),
-            );
-          fullSize =
-              !(constraints.maxWidth >= 768 && constraints.maxWidth < 1200);
-          return Scaffold(
-            body: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 200),
-              width: double.infinity,
-              decoration: BoxDecoration(gradient: GrdStyle.panel),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/images/logo.png',
-                    width: 100,
-                    height: 50,
-                  ),
-                  SizedBox(height: 40),
-                  Input(text: 'Логин', controller: phone),
-                  SizedBox(height: 24),
-                  Input(text: 'Пароль', controller: password),
-                  SizedBox(height: 40),
-                  Button(
-                    text: 'Вход',
-                    buttonType: ButtonType.Select,
-                    onPressed: () async {
-                      number = phone.text;
-                      for (String str in ['+', '(', ')', '-', ' '])
-                        number = number.replaceAll(str, '');
-                      if (number.length == 11 && password.text != '') {
-                        context
-                            .read<Restaurant>()
-                            .setLoginData(number, password.text);
-                        if (await logIn(context))
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => WebApp()),
-                          );
-                      }
-                    },
-                  ),
-                ],
-              ),
+    return Scaffold(
+      body: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 200),
+        width: double.infinity,
+        decoration: BoxDecoration(gradient: GrdStyle.panel),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/logo.png',
+              width: 100,
+              height: 50,
             ),
-          );
-        },
+            SizedBox(height: 40),
+            Input(
+              text: 'Логин',
+              controller: phone,
+              onSubmit: () async => {await submit(context)},
+            ),
+            SizedBox(height: 24),
+            Input(
+              text: 'Пароль',
+              controller: password,
+              onSubmit: () async => {await submit(context)},
+            ),
+            SizedBox(height: 40),
+            Button(
+              text: 'Вход',
+              buttonType: ButtonType.Select,
+              onPressed: () async => {await submit(context)},
+            ),
+          ],
+        ),
       ),
     );
   }

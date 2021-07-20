@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:topgo_web/functions/money_string.dart';
 import 'package:topgo_web/models/order.dart';
+import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/button.dart';
 import 'package:topgo_web/widgets/dialog.dart';
 import 'package:topgo_web/widgets/item_holder.dart';
+import 'package:provider/provider.dart';
 
 class CreateDialog extends StatelessWidget {
   final Order order;
@@ -39,8 +41,9 @@ class CreateDialog extends StatelessWidget {
               onPressed: () async => {
                 if (order.deliverySum != -1)
                   {
-                    //TODO: impl sending,
-
+                    await context
+                        .read<Restaurant>()
+                        .createOrder(context, order),
                     Navigator.pop(context),
                   }
               },
