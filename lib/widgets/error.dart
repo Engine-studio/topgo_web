@@ -9,7 +9,7 @@ class Error extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        'Error on api query:\n$text',
+        'Error on api query\n$text',
         style: TxtStyle.H1.copyWith(
           color: Color(0xFFFF0000),
         ),

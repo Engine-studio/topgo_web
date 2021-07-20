@@ -1,9 +1,14 @@
 import 'package:extended_masked_text/extended_masked_text.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:topgo_web/api.dart';
 import 'package:topgo_web/main.dart' as main;
+import 'package:topgo_web/models/order.dart';
 import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/button.dart';
+import 'package:topgo_web/widgets/create_alert.dart';
 import 'package:topgo_web/widgets/input.dart';
 import 'package:topgo_web/widgets/item_holder.dart';
 import 'package:topgo_web/widgets/map/map.dart';
@@ -19,19 +24,29 @@ class DeliveryTab extends StatefulWidget {
 }
 
 class _DeliveryTabState extends State<DeliveryTab> {
+  bool? bigOrder;
+  OrderPayment? payment;
   late MaskedTextController phone;
-  late TextEditingController deliverySum;
+  late TextEditingController body, sum, address, timeH, timeM, comment;
 
   @override
   void initState() {
     // TODO: implement initState, button function
     super.initState();
-    deliverySum = TextEditingController();
+    sum = TextEditingController();
+    body = TextEditingController();
+    address = TextEditingController();
+    timeH = TextEditingController();
+    timeM = TextEditingController();
+    comment = TextEditingController();
     phone = MaskedTextController(mask: "+0 (000) 000-00-00");
   }
 
   @override
   Widget build(BuildContext context) {
+    String number;
+    LatLng? toLatLng;
+    double deliverySumRub;
     Restaurant self = context.read<Restaurant>();
     return Column(
       children: [
@@ -53,12 +68,20 @@ class _DeliveryTabState extends State<DeliveryTab> {
                         item: Input(
                           text: 'Введите состав заказа',
                           multilined: true,
+                          controller: body,
                         ),
                         width: 190,
                       ),
                       ItemHolder(
                         header: 'Крупный заказ:',
-                        item: RadioChoose(text: ['Да', 'Нет']),
+                        item: RadioChoose(
+                          text: ['Да', 'Нет'],
+                          change: (str) {
+                            if (str != null) {
+                              bigOrder = str == 'Да';
+                            }
+                          },
+                        ),
                         width: 190,
                       ),
                       ItemHolder(
@@ -66,21 +89,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                         item: Input(
                           text: 'Введите адрес доставки',
                           multilined: true,
-                        ),
-                        width: 190,
-                      ),
-                      ItemHolder(
-                        header: 'Стоимость доставки:',
-                        item: Row(
-                          children: [
-                            SizedBox(
-                              width: 120,
-                              child:
-                                  Input(money: true, controller: deliverySum),
-                            ),
-                            SizedBox(width: 8),
-                            Text('рублей', style: TxtStyle.H5),
-                          ],
+                          controller: address,
                         ),
                         width: 190,
                       ),
@@ -88,6 +97,15 @@ class _DeliveryTabState extends State<DeliveryTab> {
                         header: 'Способ оплаты:',
                         item: RadioChoose(
                           text: ['Наличные', 'Терминал', 'Уже оплачен'],
+                          change: (str) {
+                            if (str != null) {
+                              payment = str == 'Наличные'
+                                  ? OrderPayment.Cash
+                                  : str == 'Терминал'
+                                      ? OrderPayment.Terminal
+                                      : OrderPayment.Payed;
+                            }
+                          },
                         ),
                         width: 190,
                       ),
@@ -97,7 +115,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                           children: [
                             SizedBox(
                               width: 120,
-                              child: Input(money: true),
+                              child: Input(money: true, controller: sum),
                             ),
                             SizedBox(width: 8),
                             Text('рублей', style: TxtStyle.H5),
@@ -109,11 +127,17 @@ class _DeliveryTabState extends State<DeliveryTab> {
                         header: 'Время готовки:',
                         item: Row(
                           children: [
-                            SizedBox(width: 35, child: Input()),
+                            SizedBox(
+                              width: 35,
+                              child: Input(controller: timeH),
+                            ),
                             SizedBox(width: 8),
                             Text('час', style: TxtStyle.H5),
                             SizedBox(width: 8),
-                            SizedBox(width: 35, child: Input()),
+                            SizedBox(
+                              width: 35,
+                              child: Input(controller: timeM),
+                            ),
                             SizedBox(width: 8),
                             Text('минут', style: TxtStyle.H5),
                           ],
@@ -137,6 +161,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                         item: Input(
                           text: 'Ваш комментарий к заказу',
                           multilined: true,
+                          controller: comment,
                         ),
                         width: 190,
                       ),
@@ -167,7 +192,51 @@ class _DeliveryTabState extends State<DeliveryTab> {
           child: Button(
             text: 'Оформить',
             buttonType: ButtonType.Panel,
-            onPressed: () async => {},
+            onPressed: () async => {
+              number = phone.text,
+              for (String str in ['+', '(', ')', '-', ' '])
+                number = number.replaceAll(str, ''),
+              if (number.length == 11 &&
+                  address.text != '' &&
+                  body.text != '' &&
+                  comment.text != '' &&
+                  double.tryParse(sum.text.replaceAll(' ', '')) != null &&
+                  bigOrder != null &&
+                  payment != null &&
+                  int.tryParse(timeH.text) != null &&
+                  int.tryParse(timeM.text) != null)
+                {
+                  toLatLng = await getLatLng(context, address.text),
+                  deliverySumRub = toLatLng != null
+                      ? await deliverySum(context, bigOrder!, toLatLng!)
+                      : -1,
+                  showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (_) {
+                      return ChangeNotifierProvider.value(
+                        value: Provider.of<Restaurant>(context, listen: false),
+                        child: CreateDialog(
+                          order: Order.create(
+                            toAddress: address.text,
+                            clientPhone: number,
+                            body: body.text,
+                            comment: comment.text,
+                            sum: double.parse(sum.text.replaceAll(' ', '')),
+                            big: bigOrder,
+                            paymentType: payment,
+                            cookingTime: [
+                              int.parse(timeH.text),
+                              int.parse(timeM.text),
+                            ],
+                            deliverySum: deliverySumRub,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                },
+            },
           ),
         ),
         SizedBox(height: 16),

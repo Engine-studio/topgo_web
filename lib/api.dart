@@ -149,3 +149,24 @@ Future<void> cancelOrder(
     }),
   );
 }
+
+Future<double> deliverySum(BuildContext context, bool onCar, LatLng to) async {
+  String thisHost = onCar
+      ? 'http://routes.maps.sputnik.ru/osrm/router/viaroute'
+      : 'http://footroutes.maps.sputnik.ru/';
+  LatLng from = context.read<Restaurant>().latLng!;
+  http.Response response = await http.get(
+    Uri.https(thisHost,
+        '?loc=${from.latitude},${from.longitude}&loc=${to.latitude},${to.longitude}&instructions=true'),
+  );
+
+  // 'route_summary' -> 'total_distance' (meters)
+
+  if (response.statusCode == 200)
+    return double.parse(jsonDecode(utf8.decode(response.body.codeUnits))[
+                'route_summary']['total_distance']) /
+            10 +
+        (onCar ? 100 : 90);
+  else
+    return -1;
+}

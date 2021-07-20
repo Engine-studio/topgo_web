@@ -3,9 +3,11 @@ import 'package:topgo_web/styles.dart';
 
 class RadioChoose extends StatefulWidget {
   final List<String> text;
+  final void Function(String?) change;
   const RadioChoose({
     Key? key,
     required this.text,
+    required this.change,
   }) : super(key: key);
 
   @override
@@ -33,6 +35,7 @@ class _RadioChooseState extends State<RadioChoose> {
                     setState(() {
                       choose = value;
                     });
+                    widget.change(value);
                   },
                 ),
                 Text(v, style: TxtStyle.H5),

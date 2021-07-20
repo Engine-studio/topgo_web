@@ -30,13 +30,25 @@ class Order {
   int? id, courierId;
   String? toAddress, courierName, courierPhone, clientPhone, body, comment;
   LatLng? toLatLng, courierLatLng;
-  double? rate, sum;
+  double? rate, sum, deliverySum;
   bool? big;
   List<int>? cookingTime;
   OrderStatus? status;
   OrderPayment? paymentType;
 
   String get jsonID => jsonEncode({"id": id});
+
+  Order.create({
+    required this.toAddress,
+    required this.clientPhone,
+    required this.body,
+    required this.comment,
+    required this.sum,
+    required this.big,
+    required this.cookingTime,
+    required this.paymentType,
+    required this.deliverySum,
+  });
 
   Order.fromJson(
     Map<String, dynamic> json,
