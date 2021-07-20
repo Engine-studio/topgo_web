@@ -8,7 +8,7 @@ import 'package:topgo_web/main.dart' as main;
 class Appbar extends StatelessWidget with PreferredSizeWidget {
   @override
   final Size preferredSize;
-  final void Function(int) onTap;
+  final void Function(int, BuildContext) onTap;
 
   Appbar({Key? key, required this.onTap})
       : preferredSize = Size.fromHeight(50),
@@ -34,7 +34,7 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () => onTap(0),
+                    onTap: () => onTap(0, context),
                     child: Text(
                       'Главная',
                       style: TxtStyle.H4.copyWith(color: Color(0xFFFFFFFF)),
@@ -42,7 +42,7 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
                   ),
                   SizedBox(width: main.fullSize ? 80 : 40),
                   GestureDetector(
-                    onTap: () => onTap(1),
+                    onTap: () => onTap(1, context),
                     child: Text(
                       'Оформить заказ',
                       style: TxtStyle.H4.copyWith(color: Color(0xFFFFFFFF)),
@@ -50,7 +50,7 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
                   ),
                   SizedBox(width: main.fullSize ? 80 : 40),
                   GestureDetector(
-                    onTap: () => onTap(2),
+                    onTap: () => onTap(2, context),
                     child: Row(
                       children: [
                         Text(
@@ -102,7 +102,7 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
                     ),
                     enabled: true,
                     onSelected: (value) =>
-                        onTap(3 + (int.parse(value.toString()))),
+                        onTap(3 + (int.parse(value.toString())), context),
                     itemBuilder: (context) => _list
                         .map(
                           (str) => PopupMenuItem(

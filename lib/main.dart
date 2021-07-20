@@ -34,18 +34,22 @@ class _WebAppState extends State<WebApp> {
   int _index = 2;
   bool needData = true;
 
-  void switchOn(int index) => {
+  void switchOn(int index, BuildContext context) => {
         if (index == 0)
           js.context.callMethod('open', ['https://topgo.club', '_self']),
-        if (_index == 5)
+        if (index == 5)
           {
-            //TODO: impl unlogin
-            js.context.callMethod('open', ['https://topgo.club', '_self']),
-          },
-        setState(() {
-          this.needData = true;
-          this._index = index;
-        })
+            context.read<Restaurant>().unlogin(),
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => LoginPage()),
+            ),
+          }
+        else
+          setState(() {
+            this.needData = true;
+            this._index = index;
+          })
       };
 
   Widget currentTab() {
@@ -155,18 +159,14 @@ class _LoginPageState extends State<LoginPage> {
                       for (String str in ['+', '(', ')', '-', ' '])
                         number = number.replaceAll(str, '');
                       if (number.length == 11 && password.text != '') {
-                        print('a');
                         context
                             .read<Restaurant>()
                             .setLoginData(number, password.text);
-                        print('b');
-                        bool result = await logIn(context);
-                        print('c');
-                        // if (result)
-                        //   Navigator.pushReplacement(
-                        //     context,
-                        //     MaterialPageRoute(builder: (context) => WebApp()),
-                        //   );
+                        if (await logIn(context))
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => WebApp()),
+                          );
                       }
                     },
                   ),

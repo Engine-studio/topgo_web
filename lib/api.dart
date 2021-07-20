@@ -30,6 +30,7 @@ Future<String> apiRequest({
       headers: headers ?? jsonHeader(context),
       body: body,
     );
+    print(route);
     print(response.statusCode);
     print(response.body);
     if (response.statusCode == 200)
@@ -37,9 +38,10 @@ Future<String> apiRequest({
     else if (response.statusCode == 500 &&
         jsonDecode(utf8.decode(response.body.codeUnits))['message']
             .contains('Signature')) {
-      if (!await logIn(context)) throw Exception('Unable to log in');
+      if (!await logIn(context))
+        throw Exception(utf8.decode(response.body.codeUnits));
     } else
-      throw Exception('Unable to connect to the server');
+      throw Exception(utf8.decode(response.body.codeUnits));
   }
 }
 
@@ -53,9 +55,7 @@ Future<bool> logIn(BuildContext context) async {
   );
 
   Map<String, dynamic> json = jsonDecode(_json).cast<String, dynamic>();
-
   context.read<Restaurant>().fromJson(json);
-
   return context.read<Restaurant>().logined;
 }
 

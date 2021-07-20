@@ -1,3 +1,5 @@
+import 'dart:convert' show jsonDecode;
+
 import 'package:flutter/widgets.dart';
 import 'package:topgo_web/api.dart';
 import 'package:topgo_web/widgets/error.dart';
@@ -13,7 +15,7 @@ class TopGoFutureBuilder extends StatelessWidget {
   }) : super(key: key);
 
   Future<void> globalFuture(BuildContext context) async {
-    await getAlerts(context);
+    // await getAlerts(context);
     if (future != null) await future!(context);
   }
 
@@ -23,7 +25,10 @@ class TopGoFutureBuilder extends StatelessWidget {
       future: globalFuture(context),
       builder: (context, snapshot) {
         return snapshot.hasError
-            ? Error(text: snapshot.error!.toString())
+            ? Error(
+                text: jsonDecode(
+                    snapshot.error.toString().replaceFirst('Exception: ', '')),
+              )
             : snapshot.connectionState == ConnectionState.done
                 ? child
                 : Loading();

@@ -31,7 +31,7 @@ class Restaurant with ChangeNotifier {
 
   void fromJson(Map<String, dynamic> json) {
     token = json['jwt'];
-    json = json['restaurant'].cast < Map<String, dynamic>();
+    json = json['restaurant'] as Map<String, dynamic>;
     logined = false;
     if (json['is_deleted']) return;
     logined = true;
@@ -41,6 +41,17 @@ class Restaurant with ChangeNotifier {
     latLng = LatLng(json['location_lat'], json['location_lng']);
     open = parseNaiveTime(json['working_from'][0]);
     open = parseNaiveTime(json['working_till'][0]);
+  }
+
+  void unlogin() {
+    token = null;
+    logined = false;
+    id = null;
+    name = null;
+    address = null;
+    latLng = null;
+    open = null;
+    open = null;
   }
 
   void setOrders(List<Order> orders) {
