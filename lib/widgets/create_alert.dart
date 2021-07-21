@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:topgo_web/functions/money_string.dart';
 import 'package:topgo_web/models/order.dart';
-import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/button.dart';
 import 'package:topgo_web/widgets/dialog.dart';
 import 'package:topgo_web/widgets/item_holder.dart';
-import 'package:provider/provider.dart';
 
 class CreateDialog extends StatelessWidget {
   final Order order;
-  const CreateDialog({Key? key, required this.order}) : super(key: key);
+  final Future<void> Function(Order) confirm;
+  const CreateDialog({
+    Key? key,
+    required this.order,
+    required this.confirm,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +44,7 @@ class CreateDialog extends StatelessWidget {
               onPressed: () async => {
                 if (order.deliverySum != -1)
                   {
-                    await context
-                        .read<Restaurant>()
-                        .createOrder(context, order),
+                    await confirm(order),
                     Navigator.pop(context),
                   }
               },

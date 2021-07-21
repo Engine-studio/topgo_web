@@ -48,6 +48,7 @@ class Order {
     required this.cookingTime,
     required this.paymentType,
     required this.deliverySum,
+    required this.toLatLng,
   });
 
   String json(int restaurantId) => jsonEncode({
@@ -61,6 +62,8 @@ class Order {
         'cooking_time': toNaiveTime(cookingTime!),
         'clientPhone': clientPhone,
         'client_comment': comment,
+        'address_lat': toLatLng!.latitude,
+        'address_lng': toLatLng!.longitude,
       });
 
   Order.fromJson(

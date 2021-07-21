@@ -32,7 +32,9 @@ Future<String> apiRequest({
     );
     print(route);
     print(response.statusCode);
-    print(response.body);
+    print("ASDASDASD");
+    print(utf8.decode(response.body.codeUnits));
+    print("ASDSADAS");
     if (response.statusCode == 200)
       return utf8.decode(response.body.codeUnits);
     else if (response.statusCode == 500 &&
@@ -44,6 +46,8 @@ Future<String> apiRequest({
       throw Exception(utf8.decode(response.body.codeUnits));
   }
 }
+
+/// LOGIN sector
 
 Future<bool> logIn(BuildContext context) async {
   Map<String, dynamic> data = context.read<Restaurant>().loginData;
@@ -58,6 +62,8 @@ Future<bool> logIn(BuildContext context) async {
   context.read<Restaurant>().fromJson(json);
   return context.read<Restaurant>().logined;
 }
+
+/// GET DATA sector
 
 Future<void> getAlerts(BuildContext context) async {
   String json = await apiRequest(
@@ -90,90 +96,135 @@ Future<void> getOrdersHistory(BuildContext context) async {
       );
 }
 
+/// GET TEMPORARY DATA sector
+
 Future<LatLng?> getLatLng(BuildContext context, String address) async {
-  String json = await apiRequest(
-    context: context,
-    route: '/api/ordering/get_coords_by_address',
-  );
+  try {
+    String json = await apiRequest(
+      context: context,
+      route: '/api/ordering/get_coords_by_address',
+      body: jsonEncode({'address': address}),
+    );
 
-  Map<String, dynamic> decodedJson = jsonDecode(json);
+    Map<String, dynamic> decodedJson = jsonDecode(json);
+    print(decodedJson);
 
-  double? lat = decodedJson['lat'];
-  double? lng = decodedJson['lng'];
+    double? lat = decodedJson['lat'];
+    double? lng = decodedJson['lng'];
 
-  return (lat != null && lng != null) ? LatLng(lat, lng) : null;
+    return (lat != null && lng != null) ? LatLng(lat, lng) : null;
+  } catch (e) {
+    print(e.toString());
+    return null;
+  }
 }
 
-Future<void> rateCourier(
+Future<double> getDeliverySum(
+  BuildContext context,
+  bool bigOrder,
+  LatLng toLatLng,
+  LatLng fromLatLng,
+) async {
+  try {
+    String json = await apiRequest(
+      context: context,
+      route: '/api/ordering/get_route_cost',
+      body: jsonEncode({
+        'to_lat': toLatLng.latitude,
+        'to_lng': toLatLng.longitude,
+        'from_lat': fromLatLng.latitude,
+        'from_lng': fromLatLng.longitude,
+      }),
+    );
+
+    int cost = jsonDecode(json)['cost'];
+
+    return ((bigOrder ? 100 : 90) + cost / 100);
+  } catch (e) {
+    print(e.toString());
+    return -1;
+  }
+}
+
+/// ACTION sector
+
+Future<bool> createOrder(
+  BuildContext context,
+  Order order,
+) async {
+  try {
+    await apiRequest(
+      context: context,
+      route: '/api/ordering/new',
+      body: order.json(context.read<Restaurant>().id!),
+    );
+    return true;
+  } catch (e) {
+    print(e.toString());
+    return false;
+  }
+}
+
+Future<bool> setReadyForDelivery(
+  BuildContext context,
+  Order order,
+) async {
+  try {
+    await apiRequest(
+      context: context,
+      route: '/api/ordering/set_ready_for_delivery_order',
+      body: order.jsonID,
+    );
+    return true;
+  } catch (e) {
+    print(e.toString());
+    return false;
+  }
+}
+
+Future<bool> rateCourier(
   BuildContext context,
   Order order,
   List<int> rating,
 ) async {
-  await apiRequest(
-    context: context,
-    route: '/api/ordering/rate_courier',
-    body: jsonEncode({
-      'courier_id': order.courierId,
-      'order_id': order.id,
-      'look': rating[0],
-      'politeness': rating[1],
-    }),
-  );
+  try {
+    await apiRequest(
+      context: context,
+      route: '/api/ordering/rate_courier',
+      body: jsonEncode({
+        'courier_id': order.courierId,
+        'order_id': order.id,
+        'look': rating[0],
+        'politeness': rating[1],
+      }),
+    );
+    return true;
+  } catch (e) {
+    print(e.toString());
+    return false;
+  }
 }
 
-Future<void> setReadyForDelivery(
-  BuildContext context,
-  Order order,
-) async {
-  await apiRequest(
-    context: context,
-    route: '/api/ordering/set_ready_for_delivery_order',
-    body: order.jsonID,
-  );
-}
-
-Future<void> cancelOrder(
+Future<bool> cancelOrder(
   BuildContext context,
   Order order,
   OrderFaultType type,
   String comment,
 ) async {
-  await apiRequest(
-    context: context,
-    route: '/api/ordering/set_ready_for_delivery_order',
-    body: jsonEncode({
-      'order_id': order.id,
-      'is_success': false,
-      'courier_fault': type == OrderFaultType.ByCourier,
-      'comment': comment,
-    }),
-  );
-}
-
-Future<void> createOrder(
-  BuildContext context,
-  Order order,
-) async {
-  await apiRequest(
-    context: context,
-    route: '/api/ordering/new',
-    body: order.json(context.read<Restaurant>().id!),
-  );
-}
-
-Future<double> deliverySum(BuildContext context, bool onCar, LatLng to) async {
-  LatLng from = context.read<Restaurant>().latLng!;
-  http.Response response = await http.get(Uri.http(
-    'routes.maps.sputnik.ru',
-    '/osrm/router/viaroute' +
-        '?loc=${from.latitude},${from.longitude}' +
-        '&loc=${to.latitude},${to.longitude}',
-  ));
-
-  return response.statusCode == 200
-      ? (onCar ? 100 : 90) +
-          double.parse(jsonDecode(utf8.decode(response.body.codeUnits))[
-                  'route_summary']['total_distance']) /
-              10
-      : -1;
+  try {
+    await apiRequest(
+      context: context,
+      route: '/api/ordering/set_ready_for_delivery_order',
+      body: jsonEncode({
+        'order_id': order.id,
+        'is_success': false,
+        'courier_fault': type == OrderFaultType.ByCourier,
+        'comment': comment,
+      }),
+    );
+    return true;
+  } catch (e) {
+    print(e.toString());
+    return false;
+  }
 }

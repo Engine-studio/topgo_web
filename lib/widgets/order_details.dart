@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:topgo_web/functions/money_string.dart';
 import 'package:topgo_web/functions/phone_string.dart';
 import 'package:topgo_web/main.dart' as main;
@@ -13,10 +12,12 @@ import 'package:topgo_web/widgets/grading_dialog.dart';
 import 'package:topgo_web/widgets/item_holder.dart';
 import 'package:topgo_web/widgets/order_state_line.dart';
 import 'package:provider/provider.dart';
+import 'package:topgo_web/api.dart' as api;
 
 class OrderDetailsCard extends StatefulWidget {
   final Order order;
   final void Function() removeSelf;
+
   const OrderDetailsCard({
     Key? key,
     required this.order,
@@ -30,6 +31,7 @@ class OrderDetailsCard extends StatefulWidget {
 class _OrderDetailsCardState extends State<OrderDetailsCard> {
   @override
   Widget build(BuildContext context) {
+    Restaurant self = context.read<Restaurant>();
     return BorderBox(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -41,7 +43,8 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
             ),
             SizedBox(height: 8),
             OrderStateLine(
-                status: widget.order.status ?? OrderStatus.CourierFinding),
+              status: widget.order.status ?? OrderStatus.CourierFinding,
+            ),
             SizedBox(height: 16),
             Wrap(
               spacing: 24,
@@ -137,19 +140,21 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  ...widget.order.status == OrderStatus.CourierFinding ||
-                          widget.order.status == OrderStatus.CourierConfirmation
-                      ? []
-                      : [],
+                  // ...widget.order.status == OrderStatus.CourierFinding ||
+                  //         widget.order.status == OrderStatus.CourierConfirmation
+                  //     ? []
+                  //     : [],
                   if (widget.order.status == OrderStatus.Cooking)
                     SizedBox(
                       width: 155,
                       child: Button(
                         text: 'Заказ готов',
                         buttonType: ButtonType.Accept,
-                        onPressed: () async => await context
-                            .read<Restaurant>()
-                            .orderReady(context, widget.order),
+                        onPressed: () async => {
+                          if (await api.setReadyForDelivery(
+                              context, widget.order))
+                            self.orderReady(context, widget.order)
+                        },
                       ),
                     ),
                   if (widget.order.status == OrderStatus.Delivered &&
@@ -168,9 +173,10 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                                   listen: false),
                               child: GradingDialog(
                                 rate: (context, list) async {
-                                  await context
-                                      .read<Restaurant>()
-                                      .orderRate(context, widget.order, list);
+                                  if (await api.rateCourier(
+                                      context, widget.order, list))
+                                    self.orderRate(context, widget.order, list);
+
                                   setState(() => {});
                                 },
                               ),
@@ -196,7 +202,13 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                                   listen: false),
                               child: CancelDialog(
                                 order: widget.order,
-                                onChoose: () => widget.removeSelf(),
+                                onChoose: (order, type, comment) async => {
+                                  if (await api.cancelOrder(
+                                      context, order, type, comment))
+                                    self.orderCancel(
+                                        context, order, type, comment),
+                                  widget.removeSelf(),
+                                },
                               ),
                             );
                           },

@@ -2,7 +2,7 @@ import 'package:extended_masked_text/extended_masked_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:topgo_web/api.dart';
+import 'package:topgo_web/api.dart' as api;
 import 'package:topgo_web/main.dart' as main;
 import 'package:topgo_web/models/order.dart';
 import 'package:topgo_web/models/restaurant.dart';
@@ -205,9 +205,10 @@ class _DeliveryTabState extends State<DeliveryTab> {
                   int.tryParse(timeH.text) != null &&
                   int.tryParse(timeM.text) != null)
                 {
-                  toLatLng = await getLatLng(context, address.text),
+                  toLatLng = await api.getLatLng(context, address.text),
                   deliverySumRub = toLatLng != null
-                      ? await deliverySum(context, bigOrder!, toLatLng!)
+                      ? await api.getDeliverySum(
+                          context, bigOrder!, toLatLng!, self.latLng!)
                       : -1,
                   showDialog(
                     barrierDismissible: false,
@@ -216,7 +217,10 @@ class _DeliveryTabState extends State<DeliveryTab> {
                       return ChangeNotifierProvider.value(
                         value: Provider.of<Restaurant>(context, listen: false),
                         child: CreateDialog(
+                          confirm: (order) async =>
+                              await api.createOrder(context, order),
                           order: Order.create(
+                            toLatLng: toLatLng,
                             toAddress: address.text,
                             clientPhone: number,
                             body: body.text,

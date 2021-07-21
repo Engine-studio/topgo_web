@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:topgo_web/models/order.dart';
-import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/button.dart';
 import 'package:topgo_web/widgets/dialog.dart';
 import 'package:topgo_web/widgets/input.dart';
-import 'package:provider/provider.dart';
 
 class CancelDialog extends StatefulWidget {
   final Order order;
-  final void Function() onChoose;
+  final Future<void> Function(Order, OrderFaultType, String) onChoose;
   const CancelDialog({Key? key, required this.order, required this.onChoose})
       : super(key: key);
 
@@ -54,12 +52,11 @@ class _CancelDialogState extends State<CancelDialog> {
                   onPressed: () async => {
                     if (widget.order.deliverySum != -1)
                       {
-                        await context.read<Restaurant>().orderCancel(
-                            context,
-                            widget.order,
-                            OrderFaultType.ByCourier,
-                            comment.text),
-                        widget.onChoose(),
+                        await widget.onChoose(
+                          widget.order,
+                          OrderFaultType.ByCourier,
+                          comment.text,
+                        ),
                         Navigator.pop(context),
                       }
                   },
@@ -71,12 +68,11 @@ class _CancelDialogState extends State<CancelDialog> {
                   onPressed: () async => {
                     if (widget.order.deliverySum != -1)
                       {
-                        await context.read<Restaurant>().orderCancel(
-                            context,
-                            widget.order,
-                            OrderFaultType.ByRestaurant,
-                            comment.text),
-                        widget.onChoose(),
+                        await widget.onChoose(
+                          widget.order,
+                          OrderFaultType.ByRestaurant,
+                          comment.text,
+                        ),
                         Navigator.pop(context),
                       }
                   },

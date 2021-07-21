@@ -4,7 +4,6 @@ import 'package:topgo_web/functions/money_string.dart';
 import 'package:topgo_web/functions/naive_time.dart';
 import 'package:topgo_web/models/order.dart';
 import 'package:topgo_web/widgets/search.dart';
-import 'package:topgo_web/api.dart' as api;
 
 class Restaurant with ChangeNotifier {
   bool logined;
@@ -57,14 +56,15 @@ class Restaurant with ChangeNotifier {
 
   void setOrders(List<Order> orders) {
     this.orders = orders;
-    this.shownOrders = this.orders;
-    formatShown();
+    this.shownOrders = orders;
+    // TODO: impl format shown;
+    //formatShown();
   }
 
   void setOrdersHistory(List<Order> orders) {
     this.ordersHistory = orders;
-    this.shownOrdersHistory = this.orders;
-    notifyListeners();
+    this.shownOrdersHistory = orders;
+    //notifyListeners();
   }
 
   void formShown({required String text, required SearchType type}) {
@@ -135,62 +135,49 @@ class Restaurant with ChangeNotifier {
     tmp.addAll(shownOrders.where((order) => [
           OrderStatus.Delivered,
         ].contains(order.status)));
-    shownOrders = tmp;
+    this.shownOrders = tmp;
+  }
+
+  void orderReady(BuildContext context, Order order) {
+    int ind = shownOrders.indexOf(order);
+    if (ind != -1) shownOrders[ind].status = OrderStatus.ReadyForDelivery;
+    ind = orders.indexOf(order);
+    if (ind != -1) orders[ind].status = OrderStatus.ReadyForDelivery;
 
     notifyListeners();
   }
 
-  Future<void> orderReady(BuildContext context, Order order) async {
-    try {
-      await api.setReadyForDelivery(context, order);
-      int ind = shownOrders.indexOf(order);
-      if (ind != -1) shownOrders[ind].status = OrderStatus.ReadyForDelivery;
-      ind = orders.indexOf(order);
-      if (ind != -1) orders[ind].status = OrderStatus.ReadyForDelivery;
-    } catch (e) {}
+  void orderCancel(
+    BuildContext context,
+    Order order,
+    OrderFaultType type,
+    String comment,
+  ) {
+    shownOrders.remove(order);
+    orders.remove(order);
 
     notifyListeners();
   }
 
-  Future<void> orderCancel(BuildContext context, Order order,
-      OrderFaultType type, String comment) async {
-    try {
-      await api.cancelOrder(context, order, type, comment);
-      shownOrders.remove(order);
-      orders.remove(order);
-    } catch (e) {}
-
-    notifyListeners();
-  }
-
-  Future<void> orderRate(
+  void orderRate(
     BuildContext context,
     Order order,
     List<int> rating,
-  ) async {
-    try {
-      await api.rateCourier(context, order, rating);
-      int ind = shownOrders.indexOf(order);
-      if (ind != -1) {
-        shownOrders[ind].status = OrderStatus.Success;
-        shownOrders[ind].rate =
-            double.parse((rating[0] + rating[1] / 2).toStringAsFixed(2));
-      }
-      ind = orders.indexOf(order);
-      if (ind != -1) {
-        orders[ind].status = OrderStatus.Success;
-        orders[ind].rate =
-            double.parse((rating[0] + rating[1] / 2).toStringAsFixed(2));
-      }
-    } catch (e) {}
+  ) {
+    int ind = shownOrders.indexOf(order);
+    if (ind != -1) {
+      shownOrders[ind].status = OrderStatus.Success;
+      shownOrders[ind].rate =
+          double.parse((rating[0] + rating[1] / 2).toStringAsFixed(2));
+    }
+    ind = orders.indexOf(order);
+    if (ind != -1) {
+      orders[ind].status = OrderStatus.Success;
+      orders[ind].rate =
+          double.parse((rating[0] + rating[1] / 2).toStringAsFixed(2));
+    }
 
     notifyListeners();
-  }
-
-  Future<void> createOrder(BuildContext context, Order order) async {
-    try {
-      await api.createOrder(context, order);
-    } catch (e) {}
   }
 
   int get alertsCount => orders
