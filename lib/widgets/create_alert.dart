@@ -9,7 +9,7 @@ import 'package:topgo_web/widgets/item_holder.dart';
 
 class CreateDialog extends StatelessWidget {
   final Order order;
-  final Future<void> Function(Order) confirm;
+  final Future<bool> Function(Order) confirm;
   const CreateDialog({
     Key? key,
     required this.order,
@@ -43,10 +43,7 @@ class CreateDialog extends StatelessWidget {
               buttonType: ButtonType.Accept,
               onPressed: () async => {
                 if (order.deliverySum != -1)
-                  {
-                    await confirm(order),
-                    Navigator.pop(context),
-                  }
+                  if (await confirm(order)) Navigator.pop(context)
               },
             ),
             SizedBox(height: 14),

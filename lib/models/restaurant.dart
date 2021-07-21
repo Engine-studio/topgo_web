@@ -57,6 +57,7 @@ class Restaurant with ChangeNotifier {
   void setOrders(List<Order> orders) {
     this.orders = orders;
     this.shownOrders = orders;
+    //notifyListeners();
     // TODO: impl format shown;
     //formatShown();
   }
@@ -92,7 +93,7 @@ class Restaurant with ChangeNotifier {
     shownOrders = List.from(
       shownOrders.where(
         (order) =>
-            order.courierName!.contains(text) ||
+            (order.courierName != null && order.courierName!.contains(text)) ||
             order.id!.toString().contains(text) ||
             order.toAddress!.contains(text) ||
             order.sum!.toString().contains(text) ||
@@ -100,7 +101,26 @@ class Restaurant with ChangeNotifier {
       ),
     );
 
-    formatShown();
+    List<Order> tmp = [];
+    tmp.addAll(shownOrders.where((order) => [
+          OrderStatus.CourierFinding,
+          OrderStatus.CourierConfirmation
+        ].contains(order.status)));
+    tmp.addAll(shownOrders.where((order) => [
+          OrderStatus.Cooking,
+        ].contains(order.status)));
+    tmp.addAll(shownOrders.where((order) => [
+          OrderStatus.Delivering,
+          OrderStatus.ReadyForDelivery,
+        ].contains(order.status)));
+    tmp.addAll(shownOrders.where((order) => [
+          OrderStatus.Delivered,
+        ].contains(order.status)));
+    this.shownOrders = tmp;
+
+    //TODO: normal search impl
+
+    //notifyListeners();
   }
 
   void formShownHistory({required String text}) {
@@ -136,6 +156,8 @@ class Restaurant with ChangeNotifier {
           OrderStatus.Delivered,
         ].contains(order.status)));
     this.shownOrders = tmp;
+
+    notifyListeners();
   }
 
   void orderReady(BuildContext context, Order order) {

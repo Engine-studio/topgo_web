@@ -57,10 +57,10 @@ class Order {
         'is_big_order': big,
         'delivery_address': toAddress,
         'method': paymentType.toString().replaceAll('OrderPayment.', ''),
-        'courier_share': (deliverySum! - 15) * 100,
-        'order_price': sum! * 100,
+        'courier_share': ((deliverySum! - 15) * 100).toInt(),
+        'order_price': (sum! * 100).toInt(),
         'cooking_time': toNaiveTime(cookingTime!),
-        'clientPhone': clientPhone,
+        'client_phone': clientPhone,
         'client_comment': comment,
         'address_lat': toLatLng!.latitude,
         'address_lng': toLatLng!.longitude,
@@ -71,30 +71,32 @@ class Order {
     List<Map<String, dynamic>> coords,
   )   : id = json['order_id'],
         toAddress = json['delivery_address'],
-        courierName =
-            '${json['courier_surname']} ${json['courier_name']} ${json['courier_patronymic']}',
-        courierPhone = json['courier_phone'],
         clientPhone = json['client_phone'],
         body = json['details'],
         comment = json['client_comment'],
         toLatLng = LatLng(json['address_lat'], json['address_lng']),
-        rate = double.parse((double.parse(json['courier_rate_count'] ??
-                0 / json['courier_rate_amount'] ??
-                1)
-            .toStringAsFixed(2))),
         sum = json['order_price'] / 100,
-        status = OrderStatus.values.firstWhere(
-            (e) => e.toString() == 'OrderStatus.' + json['order_status']),
+        status = OrderStatus.values
+            .firstWhere((e) => e.toString() == 'OrderStatus.' + json['status']),
         paymentType = OrderPayment.values.firstWhere(
             (e) => e.toString() == 'OrderPayment.' + json['method']),
         cookingTime = parseNaiveTime(json['cooking_time']),
         big = json['is_big_order'],
         courierId = json['courier_id'] {
-    for (Map<String, dynamic> c in coords)
-      if (c['courier_id'] == json['courier_id']) {
-        courierLatLng = LatLng(c['lat'], c['lng']);
-        break;
-      }
+    if (json['courier_id'] != null) {
+      rate = double.parse((double.parse(json['courier_rate_count'] ??
+              0 / json['courier_rate_amount'] ??
+              1)
+          .toStringAsFixed(2)));
+      courierPhone = json['courier_phone'];
+      courierName =
+          '${json['courier_surname']} ${json['courier_name']} ${json['courier_patronymic']}';
+      for (Map<String, dynamic> c in coords)
+        if (c['courier_id'] == this.courierId) {
+          courierLatLng = LatLng(c['lat'], c['lng']);
+          break;
+        }
+    }
   }
 
   Order.historyFromJson(Map<String, dynamic> json)

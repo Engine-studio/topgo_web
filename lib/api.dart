@@ -30,11 +30,11 @@ Future<String> apiRequest({
       headers: headers ?? jsonHeader(context),
       body: body,
     );
-    print(route);
-    print(response.statusCode);
-    print("ASDASDASD");
-    print(utf8.decode(response.body.codeUnits));
-    print("ASDSADAS");
+    print('');
+    print('route: $route');
+    print('code: ${response.statusCode}');
+    print('body: ${utf8.decode(response.body.codeUnits)}');
+    print('');
     if (response.statusCode == 200)
       return utf8.decode(response.body.codeUnits);
     else if (response.statusCode == 500 &&
@@ -71,15 +71,30 @@ Future<void> getAlerts(BuildContext context) async {
     route: '/api/users/restaurants/order_info',
   );
 
-  Map<String, dynamic> parsedJson = jsonDecode(json);
+  print('JSON START');
+  print(json);
+  print('JSON END');
 
-  context.read<Restaurant>().setOrders(
-        parsedJson['orders']
-            .cast<Map<String, dynamic>>()
-            .map<Order>((json) => Order.fromJson(
-                json, parsedJson['coords'].cast<Map<String, dynamic>>()))
-            .toList(),
-      );
+  var parsedJson = jsonDecode(json);
+
+  print('PARSED:');
+  print(parsedJson);
+
+  List<Map<String, dynamic>> coo =
+      parsedJson['coords'].cast<Map<String, dynamic>>();
+
+  print('coo:');
+  print(coo);
+
+  List<Map<String, dynamic>> ord =
+      parsedJson['orders'].cast<Map<String, dynamic>>();
+
+  print('ord:');
+  print(ord);
+
+  context
+      .read<Restaurant>()
+      .setOrders(ord.map<Order>((json) => Order.fromJson(json, coo)).toList());
 }
 
 Future<void> getOrdersHistory(BuildContext context) async {
@@ -153,6 +168,7 @@ Future<bool> createOrder(
   Order order,
 ) async {
   try {
+    print(order.json(context.read<Restaurant>().id!));
     await apiRequest(
       context: context,
       route: '/api/ordering/new',

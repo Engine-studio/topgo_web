@@ -14,4 +14,5 @@ List<int>? parseNaiveTime(String? naive) {
   return time.map((v) => int.parse(v)).toList();
 }
 
-String toNaiveTime(List<int> time) => '${timeString(time)}:00';
+String toNaiveTime(List<int> time) =>
+    '${timeString(time)}:00'.replaceAll(' ', '');

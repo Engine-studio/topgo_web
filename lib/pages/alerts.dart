@@ -132,7 +132,11 @@ class _AlertsTabState extends State<AlertsTab> {
                                       ),
                                   for (Order order in _orders)
                                     if (order.status != OrderStatus.Delivered &&
-                                        order.status != OrderStatus.Success)
+                                        order.status != OrderStatus.Success &&
+                                        order.status !=
+                                            OrderStatus.CourierFinding &&
+                                        order.status !=
+                                            OrderStatus.CourierConfirmation)
                                       MapMarker.courier(
                                         order.id,
                                         order.courierLatLng!.latitude,

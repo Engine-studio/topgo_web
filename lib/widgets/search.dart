@@ -66,10 +66,10 @@ class _SearchLineState extends State<SearchLine> {
                 styling: false,
                 controller: _controller,
                 onSubmit: () => !widget.history
-                    ? self.formShown(
-                        text: _controller.text,
-                        type: type,
-                      )
+                    ? context.read<Restaurant>().formShown(
+                          text: _controller.text,
+                          type: type,
+                        )
                     : self.formShownHistory(text: _controller.text),
               ),
             ),
@@ -116,7 +116,9 @@ class _SearchLineState extends State<SearchLine> {
               text: 'Поиск',
               buttonType: ButtonType.Panel,
               onPressed: () async => !widget.history
-                  ? self.formShown(text: _controller.text, type: type)
+                  ? context
+                      .read<Restaurant>()
+                      .formShown(text: _controller.text, type: type)
                   : self.formShownHistory(text: _controller.text),
             ),
           ),
