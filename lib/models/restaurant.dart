@@ -184,13 +184,13 @@ class Restaurant with ChangeNotifier {
     if (ind != -1) {
       shownOrders[ind].status = OrderStatus.Success;
       shownOrders[ind].rate =
-          double.parse((rating[0] + rating[1] / 2).toStringAsFixed(2));
+          double.parse(((rating[0] + rating[1]) / 2).toStringAsFixed(2));
     }
     ind = orders.indexOf(order);
     if (ind != -1) {
       orders[ind].status = OrderStatus.Success;
       orders[ind].rate =
-          double.parse((rating[0] + rating[1] / 2).toStringAsFixed(2));
+          double.parse(((rating[0] + rating[1]) / 2).toStringAsFixed(2));
     }
 
     notifyListeners();

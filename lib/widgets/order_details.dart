@@ -167,8 +167,7 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                         },
                       ),
                     ),
-                  if (widget.order.status == OrderStatus.Delivered &&
-                      widget.order.rate == 0)
+                  if (widget.order.status == OrderStatus.Delivered)
                     Container(
                       width: 155,
                       child: Button(
