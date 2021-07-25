@@ -108,6 +108,16 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
             ),
             SizedBox(height: 16),
             ItemHolder(
+              header: 'Стоимость доставки:',
+              style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
+              width: 150,
+              item: Text(
+                moneyString(widget.order.deliverySum ?? 0),
+                style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
+              ),
+            ),
+            SizedBox(height: 16),
+            ItemHolder(
               header: 'Адрес:',
               style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
               item: Text(
@@ -140,10 +150,10 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // ...widget.order.status == OrderStatus.CourierFinding ||
-                  //         widget.order.status == OrderStatus.CourierConfirmation
-                  //     ? []
-                  //     : [],
+                  ...widget.order.status == OrderStatus.CourierFinding ||
+                          widget.order.status == OrderStatus.CourierConfirmation
+                      ? []
+                      : [],
                   if (widget.order.status == OrderStatus.Cooking)
                     SizedBox(
                       width: 155,
@@ -202,12 +212,12 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                                   listen: false),
                               child: CancelDialog(
                                 order: widget.order,
-                                onChoose: (order, type, comment) async => {
+                                onChoose: (order, type, comment) async {
                                   if (await api.cancelOrder(
                                       context, order, type, comment))
                                     self.orderCancel(
-                                        context, order, type, comment),
-                                  widget.removeSelf(),
+                                        context, order, type, comment);
+                                  widget.removeSelf();
                                 },
                               ),
                             );

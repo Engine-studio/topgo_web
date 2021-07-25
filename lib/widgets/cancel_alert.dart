@@ -29,57 +29,64 @@ class _CancelDialogState extends State<CancelDialog> {
   Widget build(BuildContext context) {
     return DialogBox(
       width: 415,
-      height: 150,
+      height: 225,
       closeButton: true,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           children: [
-            SizedBox(height: 22),
+            SizedBox(height: 62),
             Input(
               text: 'Комментарий',
               multilined: true,
               controller: comment,
             ),
-            Spacer(),
+            SizedBox(height: 16),
             Text('По вине:', style: TxtStyle.H3),
             SizedBox(height: 8),
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Button(
-                  text: 'Курьера',
-                  buttonType: ButtonType.Accept,
-                  onPressed: () async => {
-                    if (widget.order.deliverySum != -1)
-                      {
-                        await widget.onChoose(
-                          widget.order,
-                          OrderFaultType.ByCourier,
-                          comment.text,
-                        ),
-                        Navigator.pop(context),
-                      }
-                  },
+                SizedBox(
+                  width: 179.5,
+                  child: Button(
+                    text: 'Курьера',
+                    buttonType: ButtonType.Accept,
+                    onPressed: () async => {
+                      if (widget.order.deliverySum != -1)
+                        {
+                          await widget.onChoose(
+                            widget.order,
+                            OrderFaultType.ByCourier,
+                            comment.text,
+                          ),
+                          Navigator.pop(context),
+                        }
+                    },
+                  ),
                 ),
                 SizedBox(width: 8),
-                Button(
-                  text: 'Ресторана',
-                  buttonType: ButtonType.Decline,
-                  onPressed: () async => {
-                    if (widget.order.deliverySum != -1)
-                      {
-                        await widget.onChoose(
-                          widget.order,
-                          OrderFaultType.ByRestaurant,
-                          comment.text,
-                        ),
-                        Navigator.pop(context),
-                      }
-                  },
+                SizedBox(
+                  width: 179.5,
+                  child: Button(
+                    text: 'Ресторана',
+                    buttonType: ButtonType.Decline,
+                    onPressed: () async => {
+                      if (widget.order.deliverySum != -1)
+                        {
+                          await widget.onChoose(
+                            widget.order,
+                            OrderFaultType.ByRestaurant,
+                            comment.text,
+                          ),
+                          Navigator.pop(context),
+                        }
+                    },
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 14),
+            SizedBox(height: 16),
           ],
         ),
       ),

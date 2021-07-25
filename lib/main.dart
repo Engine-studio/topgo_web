@@ -167,7 +167,6 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 200),
         width: double.infinity,
         decoration: BoxDecoration(gradient: GrdStyle.panel),
         child: Column(
@@ -179,22 +178,31 @@ class _LoginPageState extends State<LoginPage> {
               height: 50,
             ),
             SizedBox(height: 40),
-            Input(
-              text: 'Логин',
-              controller: phone,
-              onSubmit: () async => {await submit(context)},
+            SizedBox(
+              width: 275,
+              child: Input(
+                text: 'Логин',
+                controller: phone,
+                onSubmit: () async => {await submit(context)},
+              ),
             ),
             SizedBox(height: 24),
-            Input(
-              text: 'Пароль',
-              controller: password,
-              onSubmit: () async => {await submit(context)},
+            SizedBox(
+              width: 275,
+              child: Input(
+                text: 'Пароль',
+                controller: password,
+                onSubmit: () async => {await submit(context)},
+              ),
             ),
             SizedBox(height: 40),
-            Button(
-              text: 'Вход',
-              buttonType: ButtonType.Select,
-              onPressed: () async => {await submit(context)},
+            SizedBox(
+              width: 275,
+              child: Button(
+                text: 'Вход',
+                buttonType: ButtonType.Select,
+                onPressed: () async => {await submit(context)},
+              ),
             ),
           ],
         ),
