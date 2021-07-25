@@ -149,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
     if (number.length == 11 && password.text != '') {
       context.read<Restaurant>().setLoginData(number, password.text);
       if (await logIn(context))
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) {
@@ -160,53 +160,67 @@ class _LoginPageState extends State<LoginPage> {
             },
           ),
         );
+      else
+        password.text = '';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(gradient: GrdStyle.panel),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/logo.png',
-              width: 100,
-              height: 50,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxHeight < 650)
+          return Center(
+            child: Text('Screen is too small', style: TxtStyle.H1),
+          );
+        if (constraints.maxWidth < 768)
+          return Center(
+            child: Text('Screen is too small', style: TxtStyle.H1),
+          );
+        return Scaffold(
+          body: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(gradient: GrdStyle.panel),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/images/logo.png',
+                  width: 100,
+                  height: 50,
+                ),
+                SizedBox(height: 40),
+                SizedBox(
+                  width: 275,
+                  child: Input(
+                    text: 'Логин',
+                    controller: phone,
+                    onSubmit: () async => {await submit(context)},
+                  ),
+                ),
+                SizedBox(height: 24),
+                SizedBox(
+                  width: 275,
+                  child: Input(
+                    text: 'Пароль',
+                    controller: password,
+                    onSubmit: () async => {await submit(context)},
+                  ),
+                ),
+                SizedBox(height: 40),
+                SizedBox(
+                  width: 275,
+                  child: Button(
+                    text: 'Вход',
+                    buttonType: ButtonType.Select,
+                    onPressed: () async => {await submit(context)},
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 40),
-            SizedBox(
-              width: 275,
-              child: Input(
-                text: 'Логин',
-                controller: phone,
-                onSubmit: () async => {await submit(context)},
-              ),
-            ),
-            SizedBox(height: 24),
-            SizedBox(
-              width: 275,
-              child: Input(
-                text: 'Пароль',
-                controller: password,
-                onSubmit: () async => {await submit(context)},
-              ),
-            ),
-            SizedBox(height: 40),
-            SizedBox(
-              width: 275,
-              child: Button(
-                text: 'Вход',
-                buttonType: ButtonType.Select,
-                onPressed: () async => {await submit(context)},
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

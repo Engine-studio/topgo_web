@@ -41,6 +41,11 @@ class Restaurant with ChangeNotifier {
     latLng = LatLng(json['location_lat'], json['location_lng']);
     open = parseNaiveTime(json['working_from'][0]);
     close = parseNaiveTime(json['working_till'][0]);
+    orders = [];
+    ordersHistory = [];
+    shownOrders = [];
+    shownOrdersHistory = [];
+    notifyListeners();
   }
 
   void unlogin() {
@@ -56,16 +61,26 @@ class Restaurant with ChangeNotifier {
 
   void setOrders(List<Order> orders) {
     this.orders = orders;
-    this.shownOrders = orders;
-    //notifyListeners();
-    // TODO: impl format shown;
-    //formatShown();
+    this.shownOrders = [];
+    this.shownOrders.addAll(orders.where((order) => [
+          OrderStatus.CourierFinding,
+          OrderStatus.CourierConfirmation
+        ].contains(order.status)));
+    this.shownOrders.addAll(orders.where((order) => [
+          OrderStatus.Cooking,
+        ].contains(order.status)));
+    this.shownOrders.addAll(orders.where((order) => [
+          OrderStatus.Delivering,
+          OrderStatus.ReadyForDelivery,
+        ].contains(order.status)));
+    this.shownOrders.addAll(orders.where((order) => [
+          OrderStatus.Delivered,
+        ].contains(order.status)));
   }
 
   void setOrdersHistory(List<Order> orders) {
     this.ordersHistory = orders;
     this.shownOrdersHistory = orders;
-    //notifyListeners();
   }
 
   void formShown({required String text, required SearchType type}) {
@@ -118,9 +133,7 @@ class Restaurant with ChangeNotifier {
         ].contains(order.status)));
     this.shownOrders = tmp;
 
-    //TODO: normal search impl
-
-    //notifyListeners();
+    notifyListeners();
   }
 
   void formShownHistory({required String text}) {
@@ -135,27 +148,6 @@ class Restaurant with ChangeNotifier {
             moneyString(order.sum!).contains(text),
       ),
     );
-
-    notifyListeners();
-  }
-
-  void formatShown() {
-    List<Order> tmp = [];
-    tmp.addAll(shownOrders.where((order) => [
-          OrderStatus.CourierFinding,
-          OrderStatus.CourierConfirmation
-        ].contains(order.status)));
-    tmp.addAll(shownOrders.where((order) => [
-          OrderStatus.Cooking,
-        ].contains(order.status)));
-    tmp.addAll(shownOrders.where((order) => [
-          OrderStatus.Delivering,
-          OrderStatus.ReadyForDelivery,
-        ].contains(order.status)));
-    tmp.addAll(shownOrders.where((order) => [
-          OrderStatus.Delivered,
-        ].contains(order.status)));
-    this.shownOrders = tmp;
 
     notifyListeners();
   }

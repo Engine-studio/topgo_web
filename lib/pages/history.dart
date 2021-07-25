@@ -73,6 +73,7 @@ class _OrdersHistoryTabState extends State<OrdersHistoryTab> {
   Widget build(BuildContext context) {
     Restaurant self = context.read<Restaurant>();
     _orders = context.watch<Restaurant>().shownOrdersHistory;
+    if (_orders.length == 0) _widget = null;
     if (center == null) setCenter();
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: main.fullSize ? 30 : 24),
@@ -120,7 +121,7 @@ class _OrdersHistoryTabState extends State<OrdersHistoryTab> {
                                 center: center,
                                 markers: [
                                   MapMarker.restaurant(self),
-                                  if (index != -1)
+                                  if (index != -1 && _orders.length != 0)
                                     MapMarker.client(
                                       _orders[index].id,
                                       _orders[index].toLatLng!.latitude,

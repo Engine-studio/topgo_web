@@ -88,7 +88,7 @@ class Order {
               0 / json['courier_rate_amount'] ??
               1)
           .toStringAsFixed(2)));
-      courierPhone = json['courier_phone'];
+      courierPhone = json['courier_phone'].toString();
       courierName =
           '${json['courier_surname']} ${json['courier_name']} ${json['courier_patronymic']}';
       for (Map<String, dynamic> c in coords)
@@ -102,24 +102,27 @@ class Order {
   Order.historyFromJson(Map<String, dynamic> json)
       : id = json['order_id'],
         toAddress = json['delivery_address'],
-        courierName =
-            '${json['courier_surname']} ${json['courier_name']} ${json['courier_patronymic']}',
-        courierPhone = json['courier_phone'],
         clientPhone = json['client_phone'],
         body = json['details'],
         comment = json['client_comment'],
         toLatLng = LatLng(json['address_lat'], json['address_lng']),
-        courierLatLng = null,
-        rate = double.parse((double.parse(json['courier_rate_count'] ??
-                0 / json['courier_rate_amount'] ??
-                1)
-            .toStringAsFixed(2))),
         sum = json['order_price'] / 100,
-        status = OrderStatus.values.firstWhere(
-            (e) => e.toString() == 'OrderStatus.' + json['order_status']),
+        status = OrderStatus.values
+            .firstWhere((e) => e.toString() == 'OrderStatus.' + json['status']),
         paymentType = OrderPayment.values.firstWhere(
             (e) => e.toString() == 'OrderPayment.' + json['method']),
-        cookingTime = null,
-        big = null,
-        courierId = null;
+        cookingTime = parseNaiveTime(json['cooking_time']),
+        big = json['is_big_order'],
+        courierId = json['courier_id'] {
+    if (json['courier_id'] != null) {
+      rate = double.parse((double.parse((json['courier_rate_count'] ??
+                  0 / json['courier_rate_amount'] ??
+                  1)
+              .toString())
+          .toStringAsFixed(2)));
+      courierPhone = json['courier_phone'].toString();
+      courierName =
+          '${json['courier_surname']} ${json['courier_name']} ${json['courier_patronymic']}';
+    }
+  }
 }

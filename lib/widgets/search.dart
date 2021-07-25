@@ -45,14 +45,7 @@ class _SearchLineState extends State<SearchLine> {
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    Restaurant self = context.read<Restaurant>();
     Widget spacer = SizedBox(width: main.fullSize ? 24 : 16);
     return SizedBox(
       height: 32,
@@ -70,7 +63,9 @@ class _SearchLineState extends State<SearchLine> {
                           text: _controller.text,
                           type: type,
                         )
-                    : self.formShownHistory(text: _controller.text),
+                    : context
+                        .read<Restaurant>()
+                        .formShownHistory(text: _controller.text),
               ),
             ),
           ),
@@ -119,7 +114,9 @@ class _SearchLineState extends State<SearchLine> {
                   ? context
                       .read<Restaurant>()
                       .formShown(text: _controller.text, type: type)
-                  : self.formShownHistory(text: _controller.text),
+                  : context
+                      .read<Restaurant>()
+                      .formShownHistory(text: _controller.text),
             ),
           ),
         ],

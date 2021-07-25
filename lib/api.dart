@@ -50,16 +50,20 @@ Future<String> apiRequest({
 /// LOGIN sector
 
 Future<bool> logIn(BuildContext context) async {
-  Map<String, dynamic> data = context.read<Restaurant>().loginData;
-  String _json = await apiRequest(
-    context: context,
-    route: '/api/users/login',
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode(data),
-  );
+  try {
+    Map<String, dynamic> data = context.read<Restaurant>().loginData;
+    String _json = await apiRequest(
+      context: context,
+      route: '/api/users/login',
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(data),
+    );
 
-  Map<String, dynamic> json = jsonDecode(_json).cast<String, dynamic>();
-  context.read<Restaurant>().fromJson(json);
+    Map<String, dynamic> json = jsonDecode(_json).cast<String, dynamic>();
+    context.read<Restaurant>().fromJson(json);
+  } catch (_) {
+    context.read<Restaurant>().unlogin();
+  }
   return context.read<Restaurant>().logined;
 }
 
@@ -71,26 +75,13 @@ Future<void> getAlerts(BuildContext context) async {
     route: '/api/users/restaurants/order_info',
   );
 
-  print('JSON START');
-  print(json);
-  print('JSON END');
-
   var parsedJson = jsonDecode(json);
-
-  print('PARSED:');
-  print(parsedJson);
 
   List<Map<String, dynamic>> coo =
       parsedJson['coords'].cast<Map<String, dynamic>>();
 
-  print('coo:');
-  print(coo);
-
   List<Map<String, dynamic>> ord =
       parsedJson['orders'].cast<Map<String, dynamic>>();
-
-  print('ord:');
-  print(ord);
 
   context
       .read<Restaurant>()
@@ -103,12 +94,17 @@ Future<void> getOrdersHistory(BuildContext context) async {
     route: '/api/users/restaurants/order_history',
   );
 
+  List<Map<String, dynamic>> ord =
+      jsonDecode(json).cast<Map<String, dynamic>>();
+
+  try {
+    Order.historyFromJson(ord[0]);
+  } catch (e) {
+    print(e.toString());
+  }
+
   context.read<Restaurant>().setOrdersHistory(
-        jsonDecode(json)
-            .cast<Map<String, dynamic>>()
-            .map<Order>((json) => Order.historyFromJson(json))
-            .toList(),
-      );
+      ord.map<Order>((json) => Order.historyFromJson(json)).toList());
 }
 
 /// GET TEMPORARY DATA sector
@@ -227,10 +223,16 @@ Future<bool> cancelOrder(
   OrderFaultType type,
   String comment,
 ) async {
+  print(jsonEncode({
+    'order_id': order.id,
+    'is_success': false,
+    'courier_fault': type == OrderFaultType.ByCourier,
+    'comment': comment,
+  }));
   try {
     await apiRequest(
       context: context,
-      route: '/api/ordering/set_ready_for_delivery_order',
+      route: '/api/ordering/finalize_order',
       body: jsonEncode({
         'order_id': order.id,
         'is_success': false,

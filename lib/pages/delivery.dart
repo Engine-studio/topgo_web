@@ -203,7 +203,11 @@ class _DeliveryTabState extends State<DeliveryTab> {
                   bigOrder != null &&
                   payment != null &&
                   int.tryParse(timeH.text) != null &&
-                  int.tryParse(timeM.text) != null)
+                  int.tryParse(timeM.text) != null &&
+                  int.parse(timeM.text) < 60 &&
+                  int.parse(timeM.text) >= 0 &&
+                  int.parse(timeH.text) < 12 &&
+                  int.parse(timeH.text) >= 0)
                 {
                   toLatLng = await api.getLatLng(context, address.text),
                   deliverySumRub = toLatLng != null
