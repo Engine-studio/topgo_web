@@ -196,7 +196,9 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                       ),
                     ),
                   if (widget.order.status != OrderStatus.Delivered &&
-                      widget.order.status != OrderStatus.Success)
+                      widget.order.status != OrderStatus.Success &&
+                      widget.order.status != OrderStatus.FailureByCourier &&
+                      widget.order.status != OrderStatus.FailureByRestaurant)
                     Container(
                       margin: const EdgeInsets.only(left: 24),
                       width: 155,

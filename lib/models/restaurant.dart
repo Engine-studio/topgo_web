@@ -76,6 +76,8 @@ class Restaurant with ChangeNotifier {
     this.shownOrders.addAll(orders.where((order) => [
           OrderStatus.Delivered,
         ].contains(order.status)));
+
+    notifyListeners();
   }
 
   void setOrdersHistory(List<Order> orders) {
