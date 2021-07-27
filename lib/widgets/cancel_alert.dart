@@ -9,8 +9,12 @@ import 'package:topgo_web/widgets/input.dart';
 class CancelDialog extends StatefulWidget {
   final Order order;
   final Future<void> Function(Order, OrderFaultType, String) onChoose;
-  const CancelDialog({Key? key, required this.order, required this.onChoose})
-      : super(key: key);
+
+  const CancelDialog({
+    Key? key,
+    required this.order,
+    required this.onChoose,
+  }) : super(key: key);
 
   @override
   _CancelDialogState createState() => _CancelDialogState();
@@ -27,6 +31,10 @@ class _CancelDialogState extends State<CancelDialog> {
 
   @override
   Widget build(BuildContext context) {
+    bool notFound = [
+      OrderStatus.CourierConfirmation,
+      OrderStatus.CourierFinding
+    ].contains(widget.order.status);
     return DialogBox(
       width: 415,
       height: 225,
@@ -42,50 +50,66 @@ class _CancelDialogState extends State<CancelDialog> {
               controller: comment,
             ),
             SizedBox(height: 16),
-            Text('По вине:', style: TxtStyle.H3),
+            Text(notFound ? 'Отменить заказ?' : 'По вине:', style: TxtStyle.H3),
             SizedBox(height: 8),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  width: 179.5,
-                  child: Button(
-                    text: 'Курьера',
-                    buttonType: ButtonType.Accept,
-                    onPressed: () async => {
-                      if (widget.order.deliverySum != -1)
-                        {
-                          await widget.onChoose(
-                            widget.order,
-                            OrderFaultType.ByCourier,
-                            comment.text,
-                          ),
-                          Navigator.pop(context),
-                        }
-                    },
+            notFound
+                ? SizedBox(
+                    width: 179.5,
+                    child: Button(
+                      text: 'Да',
+                      buttonType: ButtonType.Decline,
+                      onPressed: () async => {
+                        await widget.onChoose(
+                          widget.order,
+                          OrderFaultType.ByRestaurant,
+                          comment.text,
+                        ),
+                        Navigator.pop(context),
+                      },
+                    ),
+                  )
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 179.5,
+                        child: Button(
+                          text: 'Курьера',
+                          buttonType: ButtonType.Accept,
+                          onPressed: () async => {
+                            if (widget.order.deliverySum != -1)
+                              {
+                                await widget.onChoose(
+                                  widget.order,
+                                  OrderFaultType.ByCourier,
+                                  comment.text,
+                                ),
+                                Navigator.pop(context),
+                              }
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      SizedBox(
+                        width: 179.5,
+                        child: Button(
+                          text: 'Ресторана',
+                          buttonType: ButtonType.Decline,
+                          onPressed: () async => {
+                            if (widget.order.deliverySum != -1)
+                              {
+                                await widget.onChoose(
+                                  widget.order,
+                                  OrderFaultType.ByRestaurant,
+                                  comment.text,
+                                ),
+                                Navigator.pop(context),
+                              }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                SizedBox(width: 8),
-                SizedBox(
-                  width: 179.5,
-                  child: Button(
-                    text: 'Ресторана',
-                    buttonType: ButtonType.Decline,
-                    onPressed: () async => {
-                      if (widget.order.deliverySum != -1)
-                        {
-                          await widget.onChoose(
-                            widget.order,
-                            OrderFaultType.ByRestaurant,
-                            comment.text,
-                          ),
-                          Navigator.pop(context),
-                        }
-                    },
-                  ),
-                ),
-              ],
-            ),
             SizedBox(height: 16),
           ],
         ),

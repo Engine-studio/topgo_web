@@ -84,11 +84,9 @@ class Order {
         big = json['is_big_order'],
         courierId = json['courier_id'] {
     if (json['courier_id'] != null) {
-      rate = double.parse((double.parse((json['courier_rate_count'] ??
-                  0 / json['courier_rate_amount'] ??
-                  1)
-              .toString())
-          .toStringAsFixed(2)));
+      rate = double.parse(((json['courier_rate_amount'] ?? 0) /
+              (json['courier_rate_count'] ?? 1))
+          .toStringAsFixed(2));
       courierPhone = json['courier_phone'].toString();
       courierName =
           '${json['courier_surname']} ${json['courier_name']} ${json['courier_patronymic']}';
@@ -116,11 +114,9 @@ class Order {
         big = json['is_big_order'],
         courierId = json['courier_id'] {
     if (json['courier_id'] != null) {
-      rate = double.parse((double.parse((json['courier_rate_count'] ??
-                  0 / json['courier_rate_amount'] ??
-                  1)
-              .toString())
-          .toStringAsFixed(2)));
+      rate = double.parse(((json['courier_rate_amount'] ?? 0) /
+              (json['courier_rate_count'] ?? 1))
+          .toStringAsFixed(2));
       courierPhone = json['courier_phone'].toString();
       courierName =
           '${json['courier_surname']} ${json['courier_name']} ${json['courier_patronymic']}';

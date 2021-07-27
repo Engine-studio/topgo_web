@@ -91,6 +91,7 @@ class _OrdersHistoryTabState extends State<OrdersHistoryTab> {
                     child: Padding(
                       padding: const EdgeInsets.only(right: 12),
                       child: ListView.separated(
+                        reverse: true,
                         itemCount: _orders.length,
                         itemBuilder: (context, index) => GestureDetector(
                           onTap: () => pick(index),

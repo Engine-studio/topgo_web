@@ -4,6 +4,7 @@ import 'package:topgo_web/functions/money_string.dart';
 import 'package:topgo_web/models/order.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:topgo_web/widgets/button.dart';
+import 'package:topgo_web/widgets/creation_success_dialog.dart';
 import 'package:topgo_web/widgets/dialog.dart';
 import 'package:topgo_web/widgets/item_holder.dart';
 
@@ -43,7 +44,11 @@ class CreateDialog extends StatelessWidget {
               buttonType: ButtonType.Accept,
               onPressed: () async => {
                 if (order.deliverySum != -1)
-                  if (await confirm(order)) Navigator.pop(context)
+                  if (await confirm(order)) Navigator.pop(context),
+                showDialog(
+                  context: context,
+                  builder: (_) => CreationSuccessDialog(),
+                ),
               },
             ),
             SizedBox(height: 14),
