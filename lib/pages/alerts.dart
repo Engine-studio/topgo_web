@@ -10,6 +10,7 @@ import 'package:topgo_web/main.dart' as main;
 import 'package:topgo_web/widgets/order_details.dart';
 import 'package:topgo_web/widgets/search.dart';
 import 'package:provider/provider.dart';
+import 'package:topgo_web/functions/map_indexed.dart';
 
 class AlertsTab extends StatefulWidget {
   const AlertsTab({Key? key}) : super(key: key);
@@ -72,7 +73,7 @@ class _AlertsTabState extends State<AlertsTab> {
   @override
   Widget build(BuildContext context) {
     Restaurant self = context.read<Restaurant>();
-    _orders = context.watch<Restaurant>().shownOrders;
+    _orders = context.watch<Restaurant>().shownOrders.reversed.toList();
     if (center == null) setCenter();
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: main.fullSize ? 30 : 24),
@@ -89,16 +90,30 @@ class _AlertsTabState extends State<AlertsTab> {
                     flex: main.fullSize ? 610 : 350,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 12),
-                      child: ListView.separated(
-                        itemCount: _orders.length,
-                        itemBuilder: (context, index) => GestureDetector(
-                          onTap: () => pick(index),
-                          child: OrderAlert(
-                            order: _orders[index],
-                            picked: this.index == index,
+                      child: Container(
+                        height: double.infinity,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: _orders.reversed
+                                .toList()
+                                .mapIndexed(
+                                  (index, order) => Container(
+                                    margin: EdgeInsets.only(
+                                      bottom:
+                                          index == _orders.length - 1 ? 0 : 16,
+                                    ),
+                                    child: GestureDetector(
+                                      onTap: () => pick(index),
+                                      child: OrderAlert(
+                                        order: _orders[index],
+                                        picked: this.index == index,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
                           ),
                         ),
-                        separatorBuilder: (_, __) => SizedBox(height: 16),
                       ),
                     ),
                   ),

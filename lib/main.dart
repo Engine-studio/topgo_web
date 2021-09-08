@@ -2,7 +2,6 @@ import 'package:extended_masked_text/extended_masked_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:topgo_web/api.dart';
-import 'package:topgo_web/models/order.dart';
 import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/pages/alerts.dart';
 import 'package:topgo_web/pages/delivery.dart';
@@ -142,7 +141,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> submit(BuildContext context) async {
-    print(OrderStatus.Cooking.toString());
     String number = phone.text;
     for (String str in ['+', '(', ')', '-', ' '])
       number = number.replaceAll(str, '');

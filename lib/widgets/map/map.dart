@@ -8,6 +8,7 @@ class Map extends StatefulWidget {
   final List<MapMarker> markers;
   final LatLng? center;
   final int? id;
+  final double zoom;
   final void Function(int)? onTap;
   const Map({
     Key? key,
@@ -15,6 +16,7 @@ class Map extends StatefulWidget {
     this.center,
     this.onTap,
     this.id,
+    this.zoom = 14,
   }) : super(key: key);
 
   @override
@@ -53,7 +55,7 @@ class _MapState extends State<Map> {
           mapController: controller,
           options: MapOptions(
             center: widget.center ?? MapMarker.defaultCenter,
-            zoom: 11,
+            zoom: widget.zoom,
           ),
           layers: [
             TileLayerOptions(

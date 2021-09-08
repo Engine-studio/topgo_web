@@ -118,7 +118,6 @@ Future<LatLng?> getLatLng(BuildContext context, String address) async {
     );
 
     Map<String, dynamic> decodedJson = jsonDecode(json);
-    print(decodedJson);
 
     double? lat = decodedJson['lat'];
     double? lng = decodedJson['lng'];
@@ -223,12 +222,6 @@ Future<bool> cancelOrder(
   OrderFaultType type,
   String comment,
 ) async {
-  print(jsonEncode({
-    'order_id': order.id,
-    'is_success': false,
-    'courier_fault': type == OrderFaultType.ByCourier,
-    'comment': comment,
-  }));
   try {
     await apiRequest(
       context: context,
