@@ -16,6 +16,29 @@ import 'package:provider/provider.dart';
 import 'package:topgo_web/widgets/map/map_marker.dart';
 import 'package:topgo_web/widgets/radio.dart';
 
+bool validAddress(
+  TextEditingController city,
+  TextEditingController street,
+  TextEditingController building,
+) {
+  return city.text != '' && street.text != '' && building.text != '';
+}
+
+String getAddress(
+  TextEditingController city,
+  TextEditingController street,
+  TextEditingController building,
+  TextEditingController door,
+  TextEditingController floor,
+  TextEditingController flat,
+) {
+  return "Россия, город ${city.text}, улица ${street.text}, " +
+      "дом ${building.text}" +
+      (door.text == '' ? ', ${door.text} подъезд' : '') +
+      (floor.text == '' ? ', ${floor.text} этаж' : '') +
+      (flat.text == '' ? ', кв. ${door.text}' : '');
+}
+
 class DeliveryTab extends StatefulWidget {
   const DeliveryTab({Key? key}) : super(key: key);
 
@@ -27,14 +50,21 @@ class _DeliveryTabState extends State<DeliveryTab> {
   bool? bigOrder;
   OrderPayment? payment;
   late MaskedTextController phone;
-  late TextEditingController body, sum, address, timeH, timeM, comment;
+  late TextEditingController body, sum, timeH, timeM, comment;
+  late TextEditingController city, street, building;
+  late TextEditingController floor, door, flat;
 
   @override
   void initState() {
     super.initState();
     sum = TextEditingController();
     body = TextEditingController();
-    address = TextEditingController();
+    city = TextEditingController();
+    street = TextEditingController();
+    building = TextEditingController();
+    floor = TextEditingController();
+    door = TextEditingController();
+    flat = TextEditingController();
     timeH = TextEditingController();
     timeM = TextEditingController();
     comment = TextEditingController();
@@ -69,7 +99,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                           multilined: true,
                           controller: body,
                         ),
-                        width: 190,
+                        width: 150,
                       ),
                       ItemHolder(
                         header: 'Крупный заказ:',
@@ -81,16 +111,66 @@ class _DeliveryTabState extends State<DeliveryTab> {
                             }
                           },
                         ),
-                        width: 190,
+                        width: 150,
                       ),
                       ItemHolder(
                         header: 'Адрес доставки:',
-                        item: Input(
-                          text: 'Введите адрес доставки',
-                          multilined: true,
-                          controller: address,
+                        item: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Flexible(
+                                    flex: 13,
+                                    child:
+                                        Input(text: 'город', controller: city)),
+                                Spacer(flex: 1),
+                                Flexible(
+                                  flex: 13,
+                                  child:
+                                      Input(text: 'улица', controller: street),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Flexible(
+                                  flex: 8,
+                                  child:
+                                      Input(text: 'дом', controller: building),
+                                ),
+                                Spacer(flex: 1),
+                                Flexible(
+                                  flex: 8,
+                                  child: Input(
+                                    text: 'под.',
+                                    controller: door,
+                                    numericOnly: true,
+                                  ),
+                                ),
+                                Spacer(flex: 1),
+                                Flexible(
+                                  flex: 8,
+                                  child: Input(
+                                    text: 'этаж',
+                                    controller: floor,
+                                    numericOnly: true,
+                                  ),
+                                ),
+                                Spacer(flex: 1),
+                                Flexible(
+                                  flex: 8,
+                                  child: Input(
+                                    text: 'кв.',
+                                    controller: flat,
+                                    numericOnly: true,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        width: 190,
+                        width: 150,
                       ),
                       ItemHolder(
                         header: 'Способ оплаты:',
@@ -106,7 +186,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                             }
                           },
                         ),
-                        width: 190,
+                        width: 150,
                       ),
                       ItemHolder(
                         header: 'Сумма заказа:',
@@ -114,13 +194,17 @@ class _DeliveryTabState extends State<DeliveryTab> {
                           children: [
                             SizedBox(
                               width: 120,
-                              child: Input(money: true, controller: sum),
+                              child: Input(
+                                money: true,
+                                controller: sum,
+                                numericOnly: true,
+                              ),
                             ),
                             SizedBox(width: 8),
                             Text('рублей', style: TxtStyle.H5),
                           ],
                         ),
-                        width: 190,
+                        width: 150,
                       ),
                       ItemHolder(
                         header: 'Время готовки:',
@@ -128,20 +212,26 @@ class _DeliveryTabState extends State<DeliveryTab> {
                           children: [
                             SizedBox(
                               width: 35,
-                              child: Input(controller: timeH),
+                              child: Input(
+                                controller: timeH,
+                                numericOnly: true,
+                              ),
                             ),
                             SizedBox(width: 8),
                             Text('час', style: TxtStyle.H5),
                             SizedBox(width: 8),
                             SizedBox(
                               width: 35,
-                              child: Input(controller: timeM),
+                              child: Input(
+                                controller: timeM,
+                                numericOnly: true,
+                              ),
                             ),
                             SizedBox(width: 8),
                             Text('минут', style: TxtStyle.H5),
                           ],
                         ),
-                        width: 190,
+                        width: 150,
                       ),
                       ItemHolder(
                         header: 'Телефон клиента:',
@@ -153,7 +243,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                             ),
                           ],
                         ),
-                        width: 190,
+                        width: 150,
                       ),
                       ItemHolder(
                         header: 'Комментарий:',
@@ -162,7 +252,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                           multilined: true,
                           controller: comment,
                         ),
-                        width: 190,
+                        width: 150,
                       ),
                     ],
                   ),
@@ -196,7 +286,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
               for (String str in ['+', '(', ')', '-', ' '])
                 number = number.replaceAll(str, ''),
               if (number.length == 11 &&
-                  address.text != '' &&
+                  validAddress(city, street, building) &&
                   body.text != '' &&
                   comment.text != '' &&
                   double.tryParse(sum.text.replaceAll(' ', '')) != null &&
@@ -209,7 +299,8 @@ class _DeliveryTabState extends State<DeliveryTab> {
                   int.parse(timeH.text) < 12 &&
                   int.parse(timeH.text) >= 0)
                 {
-                  toLatLng = await api.getLatLng(context, address.text),
+                  toLatLng = await api.getLatLng(context,
+                      getAddress(city, street, building, door, floor, flat)),
                   deliverySumRub = toLatLng != null
                       ? await api.getDeliverySum(
                           context, bigOrder!, toLatLng!, self.latLng!)
@@ -225,7 +316,8 @@ class _DeliveryTabState extends State<DeliveryTab> {
                               await api.createOrder(context, order),
                           order: Order.create(
                             toLatLng: toLatLng,
-                            toAddress: address.text,
+                            toAddress: getAddress(
+                                city, street, building, door, floor, flat),
                             clientPhone: number,
                             body: body.text,
                             comment: comment.text,

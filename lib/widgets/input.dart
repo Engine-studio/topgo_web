@@ -1,5 +1,6 @@
 import 'package:extended_masked_text/extended_masked_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:topgo_web/functions/money_string.dart';
 import 'package:topgo_web/styles.dart';
 
@@ -8,7 +9,7 @@ class Input extends StatelessWidget {
   final void Function()? onSubmit;
   final TextEditingController? controller;
   final MaskedTextController? maskedController;
-  final bool multilined, money, styling;
+  final bool multilined, money, styling, numericOnly;
 
   const Input({
     Key? key,
@@ -18,6 +19,7 @@ class Input extends StatelessWidget {
     this.multilined = false,
     this.money = false,
     this.styling = true,
+    this.numericOnly = false,
     this.onSubmit,
   }) : super(key: key);
 
@@ -53,6 +55,11 @@ class Input extends StatelessWidget {
           cursorColor: Colors.black,
           maxLines: multilined ? null : 1,
           onEditingComplete: onSubmit,
+          inputFormatters: numericOnly || money
+              ? <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                ]
+              : null,
           decoration: InputDecoration(
             hintStyle: TxtStyle.H5.copyWith(
               color: ClrStyle.text.withOpacity(0.7),
