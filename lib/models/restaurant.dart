@@ -143,7 +143,7 @@ class Restaurant with ChangeNotifier {
     shownOrdersHistory = List.from(
       shownOrdersHistory.where(
         (order) =>
-            order.courierName!.contains(text) ||
+            (order.courierName != null && order.courierName!.contains(text)) ||
             order.id!.toString().contains(text) ||
             order.toAddress!.contains(text) ||
             order.sum!.toString().contains(text) ||
