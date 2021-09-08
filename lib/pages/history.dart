@@ -73,7 +73,7 @@ class _OrdersHistoryTabState extends State<OrdersHistoryTab> {
   @override
   Widget build(BuildContext context) {
     Restaurant self = context.read<Restaurant>();
-    _orders = context.watch<Restaurant>().shownOrdersHistory;
+    _orders = context.watch<Restaurant>().shownOrdersHistory.reversed.toList();
     if (_orders.length == 0) _widget = null;
     if (center == null) setCenter();
     return Padding(
