@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:topgo_web/models/order.dart';
 import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/widgets/map/map_marker.dart';
+import 'package:topgo_web/functions/map_indexed.dart';
 import 'package:topgo_web/widgets/order_alert.dart';
 import 'package:topgo_web/widgets/map/map.dart' as topgo;
 import 'package:topgo_web/main.dart' as main;
@@ -90,18 +91,43 @@ class _OrdersHistoryTabState extends State<OrdersHistoryTab> {
                     flex: main.fullSize ? 610 : 350,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 12),
-                      child: ListView.separated(
-                        reverse: true,
-                        itemCount: _orders.length,
-                        itemBuilder: (context, index) => GestureDetector(
-                          onTap: () => pick(index),
-                          child: OrderAlert(
-                            order: _orders[index],
-                            picked: this.index == index,
+                      child: Container(
+                        height: double.infinity,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: _orders.reversed
+                                .toList()
+                                .mapIndexed(
+                                  (index, order) => Container(
+                                    margin: EdgeInsets.only(
+                                      bottom:
+                                          index == _orders.length - 1 ? 0 : 16,
+                                    ),
+                                    child: GestureDetector(
+                                      onTap: () => pick(index),
+                                      child: OrderAlert(
+                                        order: _orders[index],
+                                        picked: this.index == index,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
                           ),
                         ),
-                        separatorBuilder: (_, __) => SizedBox(height: 16),
                       ),
+                      // child: ListView.separated(
+                      //   reverse: true,
+                      //   itemCount: _orders.length,
+                      //   itemBuilder: (context, index) => GestureDetector(
+                      //     onTap: () => pick(index),
+                      //     child: OrderAlert(
+                      //       order: _orders[index],
+                      //       picked: this.index == index,
+                      //     ),
+                      //   ),
+                      //   separatorBuilder: (_, __) => SizedBox(height: 16),
+                      // ),
                     ),
                   ),
                   Expanded(
