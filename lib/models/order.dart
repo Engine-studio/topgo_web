@@ -83,6 +83,7 @@ class Order {
         cookingTime = parseNaiveTime(json['cooking_time']),
         big = json['is_big_order'],
         courierId = json['courier_id'] {
+    deliverySum = json['courier_share'] / 100 + 15;
     if (json['courier_id'] != null) {
       rate = double.parse(((json['courier_rate_amount'] ?? 0) /
               (json['courier_rate_count'] ?? 1))
@@ -113,6 +114,7 @@ class Order {
         cookingTime = parseNaiveTime(json['cooking_time']),
         big = json['is_big_order'],
         courierId = json['courier_id'] {
+    deliverySum = json['courier_share'] / 100 + 15;
     if (json['courier_id'] != null) {
       rate = double.parse(((json['courier_rate_amount'] ?? 0) /
               (json['courier_rate_count'] ?? 1))
