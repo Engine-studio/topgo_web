@@ -38,7 +38,7 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
         child: Column(
           children: [
             Text(
-              widget.order.courierName ?? 'No data',
+              widget.order.courierName ?? "Курьер не был назначен",
               style: TxtStyle.H2,
             ),
             SizedBox(height: 8),
