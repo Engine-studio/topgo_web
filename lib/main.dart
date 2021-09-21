@@ -67,7 +67,7 @@ class _WebAppState extends State<WebApp> {
     if (_index == 0 && _index == 5) return Container();
     if (!needData) {
       return _index == 1
-          ? DeliveryTab()
+          ? DeliveryTab(redirect: () => switchOn(2, context))
           : _index == 2
               ? AlertsTab()
               : _index == 3
@@ -78,7 +78,7 @@ class _WebAppState extends State<WebApp> {
       return TopGoFutureBuilder(
         future: _index == 4 ? getOrdersHistory : null,
         child: _index == 1
-            ? DeliveryTab()
+            ? DeliveryTab(redirect: () => switchOn(2, context))
             : _index == 2
                 ? AlertsTab()
                 : _index == 3

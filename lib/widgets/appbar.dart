@@ -4,7 +4,6 @@ import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:provider/provider.dart';
 import 'package:topgo_web/main.dart' as main;
-import 'package:topgo_web/models/restaurant.dart';
 
 class Appbar extends StatelessWidget with PreferredSizeWidget {
   @override
