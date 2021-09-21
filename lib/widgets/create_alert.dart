@@ -10,11 +10,13 @@ import 'package:topgo_web/widgets/item_holder.dart';
 
 class CreateDialog extends StatelessWidget {
   final Order order;
+  final Function() redirect;
   final Future<bool> Function(Order) confirm;
   const CreateDialog({
     Key? key,
     required this.order,
     required this.confirm,
+    required this.redirect,
   }) : super(key: key);
 
   @override
@@ -46,8 +48,9 @@ class CreateDialog extends StatelessWidget {
                 if (order.deliverySum != -1)
                   if (await confirm(order)) Navigator.pop(context),
                 showDialog(
+                  barrierDismissible: false,
                   context: context,
-                  builder: (_) => CreationSuccessDialog(),
+                  builder: (_) => CreationSuccessDialog(redirect: redirect),
                 ),
               },
             ),

@@ -4,7 +4,9 @@ import 'package:topgo_web/widgets/button.dart';
 import 'package:topgo_web/widgets/dialog.dart';
 
 class CreationSuccessDialog extends StatelessWidget {
-  const CreationSuccessDialog({Key? key}) : super(key: key);
+  final Function() redirect;
+  const CreationSuccessDialog({Key? key, required this.redirect})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,10 @@ class CreationSuccessDialog extends StatelessWidget {
               child: Button(
                 text: 'Продолжить',
                 buttonType: ButtonType.Accept,
-                onPressed: () async => Navigator.pop(context),
+                onPressed: () async => {
+                  Navigator.pop(context),
+                  redirect(),
+                },
               ),
             ),
           ],

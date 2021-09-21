@@ -76,7 +76,7 @@ class OrderAlert extends StatelessWidget {
                 header: 'Курьер:',
                 style: main.fullSize ? TxtStyle.H4 : TxtStyle.h3,
                 item: Text(
-                  order.courierName ?? 'No data',
+                  order.courierName ?? "Курьер не был назначен",
                   style: main.fullSize ? TxtStyle.H5 : TxtStyle.h4,
                 ),
               ),

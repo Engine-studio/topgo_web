@@ -90,7 +90,7 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
                         Image.asset('assets/icons/user-circle.png', height: 22),
                         SizedBox(width: 10),
                         Text(
-                          'Такой-то ресторан',
+                          context.read<Restaurant>().name ?? "Ваш ресторан",
                           style: TxtStyle.H4.copyWith(color: Color(0xFFFFFFFF)),
                         ),
                       ],
