@@ -34,9 +34,9 @@ String getAddress(
 ) {
   return "Россия, город ${city.text}, улица ${street.text}, " +
       "дом ${building.text}" +
-      (door.text == '' ? ', ${door.text} подъезд' : '') +
-      (floor.text == '' ? ', ${floor.text} этаж' : '') +
-      (flat.text == '' ? ', кв. ${door.text}' : '');
+      (door.text != '' ? ', ${door.text} подъезд' : '') +
+      (floor.text != '' ? ', ${floor.text} этаж' : '') +
+      (flat.text != '' ? ', кв. ${flat.text}' : '');
 }
 
 class DeliveryTab extends StatefulWidget {
