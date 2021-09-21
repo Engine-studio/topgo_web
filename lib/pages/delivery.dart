@@ -34,14 +34,13 @@ String getAddress(
 ) {
   return "Россия, город ${city.text}, улица ${street.text}, " +
       "дом ${building.text}" +
-      (door.text != '' ? ', ${door.text} подъезд' : '') +
-      (floor.text != '' ? ', ${floor.text} этаж' : '') +
-      (flat.text != '' ? ', кв. ${flat.text}' : '');
+      (door.text == '' ? ', ${door.text} подъезд' : '') +
+      (floor.text == '' ? ', ${floor.text} этаж' : '') +
+      (flat.text == '' ? ', кв. ${door.text}' : '');
 }
 
 class DeliveryTab extends StatefulWidget {
-  final Function() redirect;
-  const DeliveryTab({Key? key, required this.redirect}) : super(key: key);
+  const DeliveryTab({Key? key}) : super(key: key);
 
   @override
   _DeliveryTabState createState() => _DeliveryTabState();
@@ -313,7 +312,6 @@ class _DeliveryTabState extends State<DeliveryTab> {
                       return ChangeNotifierProvider.value(
                         value: Provider.of<Restaurant>(context, listen: false),
                         child: CreateDialog(
-                          redirect: widget.redirect,
                           confirm: (order) async =>
                               await api.createOrder(context, order),
                           order: Order.create(
