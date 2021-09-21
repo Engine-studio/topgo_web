@@ -4,6 +4,7 @@ import 'package:topgo_web/models/restaurant.dart';
 import 'package:topgo_web/styles.dart';
 import 'package:provider/provider.dart';
 import 'package:topgo_web/main.dart' as main;
+import 'package:topgo_web/models/restaurant.dart';
 
 class Appbar extends StatelessWidget with PreferredSizeWidget {
   @override
@@ -90,7 +91,7 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
                         Image.asset('assets/icons/user-circle.png', height: 22),
                         SizedBox(width: 10),
                         Text(
-                          'Такой-то ресторан',
+                          context.read<Restaurant>().name ?? "Ваш ресторан",
                           style: TxtStyle.H4.copyWith(color: Color(0xFFFFFFFF)),
                         ),
                       ],
