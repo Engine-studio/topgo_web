@@ -25,18 +25,20 @@ bool validAddress(
 }
 
 String getAddress(
-  TextEditingController city,
-  TextEditingController street,
-  TextEditingController building,
-  TextEditingController door,
-  TextEditingController floor,
-  TextEditingController flat,
-) {
-  return "Россия, город ${city.text}, улица ${street.text}, " +
-      "дом ${building.text}" +
-      (door.text != '' ? ', ${door.text} подъезд' : '') +
-      (floor.text != '' ? ', ${floor.text} этаж' : '') +
-      (flat.text != '' ? ', кв. ${flat.text}' : '');
+    TextEditingController city,
+    TextEditingController street,
+    TextEditingController building,
+    TextEditingController door,
+    TextEditingController floor,
+    TextEditingController flat,
+    {bool? forQuery}) {
+  return forQuery == true
+      ? "Россия, ${city.text}, ул. ${street.text}, ${building.text}"
+      : "Россия, город ${city.text}, улица ${street.text}, " +
+          "дом ${building.text}" +
+          (door.text != '' ? ', ${door.text} подъезд' : '') +
+          (floor.text != '' ? ', ${floor.text} этаж' : '') +
+          (flat.text != '' ? ', кв. ${flat.text}' : '');
 }
 
 class DeliveryTab extends StatefulWidget {
@@ -300,8 +302,10 @@ class _DeliveryTabState extends State<DeliveryTab> {
                   int.parse(timeH.text) < 12 &&
                   int.parse(timeH.text) >= 0)
                 {
-                  toLatLng = await api.getLatLng(context,
-                      getAddress(city, street, building, door, floor, flat)),
+                  toLatLng = await api.getLatLng(
+                      context,
+                      getAddress(city, street, building, door, floor, flat,
+                          forQuery: true)),
                   deliverySumRub = toLatLng != null
                       ? await api.getDeliverySum(
                           context, bigOrder!, toLatLng!, self.latLng!)
