@@ -146,6 +146,8 @@ class _OrdersHistoryTabState extends State<OrdersHistoryTab> {
                               margin: EdgeInsets.only(bottom: 12),
                               child: topgo.Map(
                                 center: center,
+                                closeFunction: () =>
+                                    setState(() => {_widget = null}),
                                 markers: [
                                   MapMarker.restaurant(self),
                                   if (index != -1 && _orders.length != 0)
