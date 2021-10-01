@@ -36,22 +36,37 @@ class CreateDialog extends StatelessWidget {
               item: Text(
                 order.deliverySum != -1
                     ? '${moneyString(order.deliverySum!, rub: false)} руб.'
-                    : 'Not found',
+                    : 'не определена',
                 style: TxtStyle.H3,
               ),
             ),
             Spacer(),
             Button(
-              text: 'Создать заказ',
-              buttonType: ButtonType.Accept,
+              text: order.deliverySum != -1
+                  ? 'Создать заказ'
+                  : 'Попробуйте снова',
+              buttonType: order.deliverySum != -1
+                  ? ButtonType.Accept
+                  : ButtonType.Decline,
               onPressed: () async => {
                 if (order.deliverySum != -1)
-                  if (await confirm(order)) Navigator.pop(context),
-                showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (_) => CreationSuccessDialog(redirect: redirect),
-                ),
+                  {
+                    if (await confirm(order))
+                      {
+                        Navigator.pop(context),
+                        showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (_) => CreationSuccessDialog(
+                            redirect: redirect,
+                          ),
+                        ),
+                      },
+                  }
+                else
+                  {
+                    Navigator.pop(context),
+                  }
               },
             ),
             SizedBox(height: 14),

@@ -166,9 +166,6 @@ class _LoginPageState extends State<LoginPage> {
     String number = phone.text;
     for (String str in ['+', '(', ')', '-', ' '])
       number = number.replaceAll(str, '');
-    // TODO: remove credentials
-    number = "09123323232";
-    password.text = 'admin';
     if (number.length == 11 && password.text != '') {
       context.read<Restaurant>().setLoginData(number, password.text);
       if (await logIn(context))
