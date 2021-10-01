@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:topgo_web/widgets/close_button.dart';
 import 'package:topgo_web/widgets/map/map_marker.dart';
 import 'package:topgo_web/widgets/map/zoom.dart';
 
@@ -10,6 +11,8 @@ class Map extends StatefulWidget {
   final int? id;
   final double zoom;
   final void Function(int)? onTap;
+  final void Function()? closeFunction;
+
   const Map({
     Key? key,
     this.markers = const [],
@@ -17,6 +20,7 @@ class Map extends StatefulWidget {
     this.onTap,
     this.id,
     this.zoom = 14,
+    this.closeFunction,
   }) : super(key: key);
 
   @override
@@ -80,8 +84,16 @@ class _MapState extends State<Map> {
           ],
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            if (widget.closeFunction != null)
+              GestureDetector(
+                onTap: widget.closeFunction,
+                child: Container(
+                  margin: const EdgeInsets.only(left: 10, top: 10),
+                  child: CloseButton(white: true),
+                ),
+              ),
+            Spacer(),
             GestureDetector(
               onTap: () =>
                   controller.move(controller.center, controller.zoom - 0.5),

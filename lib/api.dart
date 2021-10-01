@@ -30,11 +30,16 @@ Future<String> apiRequest({
       headers: headers ?? jsonHeader(context),
       body: body,
     );
+
     print('');
+    print('REQ:');
     print('route: $route');
+    print('body: $body');
+    print('RESP:');
     print('code: ${response.statusCode}');
-    print('body: ${utf8.decode(response.body.codeUnits)}');
+    print('body: ${response.body}');
     print('');
+
     if (response.statusCode == 200)
       return utf8.decode(response.body.codeUnits);
     else if (response.statusCode == 500 &&

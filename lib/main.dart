@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:extended_masked_text/extended_masked_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +37,9 @@ class WebApp extends StatefulWidget {
 }
 
 class _WebAppState extends State<WebApp> {
+  Timer? timer;
+  BuildContext? thisContext;
+
   int _index = 3;
   bool needData = true;
 
@@ -88,8 +93,25 @@ class _WebAppState extends State<WebApp> {
     }
   }
 
+  void polling() async {
+    print('POLLING');
+    try {
+      await getAlerts(thisContext!);
+    } catch (e) {
+      print('POLLING ERR: ' + e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    thisContext = context;
+
+    if (timer == null)
+      timer = Timer.periodic(
+        Duration(seconds: 30),
+        (t) => {if (thisContext != null) polling()},
+      );
+
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxHeight < 650)
@@ -144,6 +166,8 @@ class _LoginPageState extends State<LoginPage> {
     String number = phone.text;
     for (String str in ['+', '(', ')', '-', ' '])
       number = number.replaceAll(str, '');
+    number = "09123323232";
+    password.text = 'admin';
     if (number.length == 11 && password.text != '') {
       context.read<Restaurant>().setLoginData(number, password.text);
       if (await logIn(context))

@@ -135,6 +135,8 @@ class _AlertsTabState extends State<AlertsTab> {
                                 id: id,
                                 center: center,
                                 onTap: pickById,
+                                closeFunction: () =>
+                                    setState(() => {_widget = null}),
                                 markers: [
                                   MapMarker.restaurant(self),
                                   for (Order order in _orders)
@@ -154,8 +156,12 @@ class _AlertsTabState extends State<AlertsTab> {
                                             OrderStatus.CourierConfirmation)
                                       MapMarker.courier(
                                         order.id,
-                                        order.courierLatLng!.latitude,
-                                        order.courierLatLng!.longitude,
+                                        order.courierLatLng != null
+                                            ? order.courierLatLng!.latitude
+                                            : 0,
+                                        order.courierLatLng != null
+                                            ? order.courierLatLng!.longitude
+                                            : 0,
                                       ),
                                 ],
                               ),
