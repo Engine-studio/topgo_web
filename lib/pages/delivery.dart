@@ -52,10 +52,63 @@ class DeliveryTab extends StatefulWidget {
 class _DeliveryTabState extends State<DeliveryTab> {
   bool? bigOrder;
   OrderPayment? payment;
-  late MaskedTextController phone;
-  late TextEditingController body, sum, timeH, timeM, comment;
+  late MaskedTextController phone, timeH, timeM;
+  late TextEditingController body, sum, comment;
   late TextEditingController city, street, building;
   late TextEditingController floor, door, flat;
+
+  String? number;
+  int? hours;
+  int? min;
+
+  bool validBigOrder = true,
+      validPayment = true,
+      validPhone = true,
+      validTimeH = true,
+      validTimeM = true,
+      validBody = true,
+      validSum = true,
+      validComment = true,
+      validCity = true,
+      validStreet = true,
+      validBuilding = true;
+
+  void validate() {
+    setState(() {
+      number = phone.text;
+      for (String str in ['+', '(', ')', '-', ' '])
+        number = number!.replaceAll(str, '');
+
+      hours = int.tryParse(timeH.text);
+      min = int.tryParse(timeM.text);
+
+      validBigOrder = bigOrder != null;
+      validPayment = payment != null;
+      validPhone = number!.length == 11;
+      validTimeH = hours != null && hours! < 24 && hours! >= 0;
+      validTimeM = min != null && min! < 60 && min! >= 0;
+      validBody = body.text != '';
+      validSum = double.tryParse(sum.text.replaceAll(' ', '')) != null;
+      validComment = comment.text != '';
+      validCity = city.text != '';
+      validStreet = street.text != '';
+      validBuilding = building.text != '';
+    });
+  }
+
+  bool isValid() {
+    return validBigOrder &&
+        validPayment &&
+        validPhone &&
+        validTimeH &&
+        validTimeM &&
+        validBody &&
+        validSum &&
+        validComment &&
+        validCity &&
+        validStreet &&
+        validBuilding;
+  }
 
   @override
   void initState() {
@@ -68,15 +121,14 @@ class _DeliveryTabState extends State<DeliveryTab> {
     floor = TextEditingController();
     door = TextEditingController();
     flat = TextEditingController();
-    timeH = TextEditingController();
-    timeM = TextEditingController();
+    timeH = MaskedTextController(mask: "00");
+    timeM = MaskedTextController(mask: "00");
     comment = TextEditingController();
     phone = MaskedTextController(mask: "+0 (000) 000-00-00");
   }
 
   @override
   Widget build(BuildContext context) {
-    String number;
     LatLng? toLatLng;
     double deliverySumRub;
     Restaurant self = context.read<Restaurant>();
@@ -101,6 +153,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                           text: 'Введите состав заказа',
                           multilined: true,
                           controller: body,
+                          error: !validBody,
                         ),
                         width: 150,
                       ),
@@ -108,6 +161,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                         header: 'Крупный заказ:',
                         item: RadioChoose(
                           text: ['Да', 'Нет'],
+                          error: !validBigOrder,
                           change: (str) {
                             if (str != null) {
                               bigOrder = str == 'Да';
@@ -123,14 +177,21 @@ class _DeliveryTabState extends State<DeliveryTab> {
                             Row(
                               children: [
                                 Flexible(
-                                    flex: 13,
-                                    child:
-                                        Input(text: 'город', controller: city)),
+                                  flex: 13,
+                                  child: Input(
+                                    text: 'город',
+                                    controller: city,
+                                    error: !validCity,
+                                  ),
+                                ),
                                 Spacer(flex: 1),
                                 Flexible(
                                   flex: 13,
-                                  child:
-                                      Input(text: 'улица', controller: street),
+                                  child: Input(
+                                    text: 'улица',
+                                    controller: street,
+                                    error: !validStreet,
+                                  ),
                                 ),
                               ],
                             ),
@@ -139,8 +200,11 @@ class _DeliveryTabState extends State<DeliveryTab> {
                               children: [
                                 Flexible(
                                   flex: 8,
-                                  child:
-                                      Input(text: 'дом', controller: building),
+                                  child: Input(
+                                    text: 'дом',
+                                    controller: building,
+                                    error: !validBuilding,
+                                  ),
                                 ),
                                 Spacer(flex: 1),
                                 Flexible(
@@ -179,6 +243,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                         header: 'Способ оплаты:',
                         item: RadioChoose(
                           text: ['Наличные', 'Терминал', 'Уже оплачен'],
+                          error: !validPayment,
                           change: (str) {
                             if (str != null) {
                               payment = str == 'Наличные'
@@ -200,6 +265,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                               child: Input(
                                 money: true,
                                 controller: sum,
+                                error: !validSum,
                                 numericOnly: true,
                               ),
                             ),
@@ -214,9 +280,10 @@ class _DeliveryTabState extends State<DeliveryTab> {
                         item: Row(
                           children: [
                             SizedBox(
-                              width: 35,
+                              width: 33,
                               child: Input(
-                                controller: timeH,
+                                maskedController: timeH,
+                                error: !validTimeH,
                                 numericOnly: true,
                               ),
                             ),
@@ -224,9 +291,10 @@ class _DeliveryTabState extends State<DeliveryTab> {
                             Text('час', style: TxtStyle.H5),
                             SizedBox(width: 8),
                             SizedBox(
-                              width: 35,
+                              width: 33,
                               child: Input(
-                                controller: timeM,
+                                maskedController: timeM,
+                                error: !validTimeM,
                                 numericOnly: true,
                               ),
                             ),
@@ -242,7 +310,10 @@ class _DeliveryTabState extends State<DeliveryTab> {
                           children: [
                             SizedBox(
                               width: 130,
-                              child: Input(maskedController: phone),
+                              child: Input(
+                                maskedController: phone,
+                                error: !validPhone,
+                              ),
                             ),
                           ],
                         ),
@@ -253,6 +324,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                         item: Input(
                           text: 'Ваш комментарий к заказу',
                           multilined: true,
+                          error: !validComment,
                           controller: comment,
                         ),
                         width: 150,
@@ -285,22 +357,8 @@ class _DeliveryTabState extends State<DeliveryTab> {
             text: 'Оформить',
             buttonType: ButtonType.Panel,
             onPressed: () async => {
-              number = phone.text,
-              for (String str in ['+', '(', ')', '-', ' '])
-                number = number.replaceAll(str, ''),
-              if (number.length == 11 &&
-                  validAddress(city, street, building) &&
-                  body.text != '' &&
-                  comment.text != '' &&
-                  double.tryParse(sum.text.replaceAll(' ', '')) != null &&
-                  bigOrder != null &&
-                  payment != null &&
-                  int.tryParse(timeH.text) != null &&
-                  int.tryParse(timeM.text) != null &&
-                  int.parse(timeM.text) < 60 &&
-                  int.parse(timeM.text) >= 0 &&
-                  int.parse(timeH.text) < 12 &&
-                  int.parse(timeH.text) >= 0)
+              validate(),
+              if (isValid())
                 {
                   toLatLng = await api.getLatLng(
                       context,
@@ -324,16 +382,13 @@ class _DeliveryTabState extends State<DeliveryTab> {
                             toLatLng: toLatLng,
                             toAddress: getAddress(
                                 city, street, building, door, floor, flat),
-                            clientPhone: number,
+                            clientPhone: this.number,
                             body: body.text,
                             comment: comment.text,
                             sum: double.parse(sum.text.replaceAll(' ', '')),
                             big: bigOrder,
                             paymentType: payment,
-                            cookingTime: [
-                              int.parse(timeH.text),
-                              int.parse(timeM.text),
-                            ],
+                            cookingTime: [this.hours!, this.min!],
                             deliverySum: deliverySumRub,
                           ),
                         ),

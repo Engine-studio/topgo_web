@@ -9,7 +9,7 @@ class Input extends StatelessWidget {
   final void Function()? onSubmit;
   final TextEditingController? controller;
   final MaskedTextController? maskedController;
-  final bool multilined, money, styling, numericOnly;
+  final bool multilined, money, styling, numericOnly, error;
 
   const Input({
     Key? key,
@@ -20,6 +20,7 @@ class Input extends StatelessWidget {
     this.money = false,
     this.styling = true,
     this.numericOnly = false,
+    this.error = false,
     this.onSubmit,
   }) : super(key: key);
 
@@ -34,7 +35,9 @@ class Input extends StatelessWidget {
               borderRadius: BorderRadius.circular(6),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF6A9DD9).withOpacity(0.15),
+                  color: error
+                      ? Color(0xFFFF0000).withOpacity(0.35)
+                      : Color(0xFF6A9DD9).withOpacity(0.15),
                   blurRadius: 3,
                 )
               ],

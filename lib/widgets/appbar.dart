@@ -27,20 +27,15 @@ class Appbar extends StatelessWidget with PreferredSizeWidget {
             left: 30, top: 7, bottom: 7, right: main.fullSize ? 80 : 16),
         child: Row(
           children: [
-            Image.asset('assets/images/logo.png'),
+            GestureDetector(
+              onTap: () => onTap(0, context),
+              child: Image.asset('assets/images/logo.png'),
+            ),
             Spacer(),
             SizedBox(
               height: 24,
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () => onTap(0, context),
-                    child: Text(
-                      'Главная',
-                      style: TxtStyle.H4.copyWith(color: Color(0xFFFFFFFF)),
-                    ),
-                  ),
-                  SizedBox(width: main.fullSize ? 80 : 40),
                   GestureDetector(
                     onTap: () => onTap(1, context),
                     child: Text(
