@@ -194,8 +194,7 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                         ),
                       ),
                     ),
-                  if (widget.order.status != OrderStatus.Delivered &&
-                      widget.order.status != OrderStatus.Success &&
+                  if (widget.order.status != OrderStatus.Success &&
                       widget.order.status != OrderStatus.FailureByCourier &&
                       widget.order.status != OrderStatus.FailureByRestaurant)
                     Container(
