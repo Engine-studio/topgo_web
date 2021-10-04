@@ -61,20 +61,32 @@ class _AlertsTabState extends State<AlertsTab> {
   void pickById(int id) {
     int ind = -1;
     for (int i = 0; i < _orders.length; i++) if (_orders[i].id == id) ind = i;
-    setState(() {
-      this.index = ind;
-      this.id = id;
-      _widget = OrderDetailsCard(
-          order: _orders[ind],
-          removeSelf: () => setState(() => {_widget = null}));
-    });
+    ind != -1
+        ? setState(() {
+            this.index = ind;
+            this.id = id;
+            _widget = OrderDetailsCard(
+                order: _orders[ind],
+                removeSelf: () => setState(() => {_widget = null}));
+          })
+        : setState(() {
+            this.index = -1;
+            this.id = null;
+            _widget = null;
+          });
   }
 
   @override
   Widget build(BuildContext context) {
     Restaurant self = context.read<Restaurant>();
     _orders = context.watch<Restaurant>().shownOrders.reversed.toList();
+
+    if (_widget != null && id != null) {
+      pickById(id!);
+    }
+
     if (center == null) setCenter();
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: main.fullSize ? 30 : 24),
       child: Column(
