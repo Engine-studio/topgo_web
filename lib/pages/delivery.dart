@@ -38,7 +38,7 @@ String getAddress(
           "дом ${building.text}" +
           (door.text != '' ? ', ${door.text} подъезд' : '') +
           (floor.text != '' ? ', ${floor.text} этаж' : '') +
-          (flat.text != '' ? ', кв. ${flat.text}' : '');
+          (flat.text != '' ? ', кв./офис ${flat.text}' : '');
 }
 
 class DeliveryTab extends StatefulWidget {
@@ -68,7 +68,6 @@ class _DeliveryTabState extends State<DeliveryTab> {
       validTimeM = true,
       validBody = true,
       validSum = true,
-      validComment = true,
       validCity = true,
       validStreet = true,
       validBuilding = true;
@@ -89,7 +88,6 @@ class _DeliveryTabState extends State<DeliveryTab> {
       validTimeM = min != null && min! < 60 && min! >= 0;
       validBody = body.text != '';
       validSum = double.tryParse(sum.text.replaceAll(' ', '')) != null;
-      validComment = comment.text != '';
       validCity = city.text != '';
       validStreet = street.text != '';
       validBuilding = building.text != '';
@@ -104,7 +102,6 @@ class _DeliveryTabState extends State<DeliveryTab> {
         validTimeM &&
         validBody &&
         validSum &&
-        validComment &&
         validCity &&
         validStreet &&
         validBuilding;
@@ -228,7 +225,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                                 Flexible(
                                   flex: 8,
                                   child: Input(
-                                    text: 'кв.',
+                                    text: 'кв./офис',
                                     controller: flat,
                                     numericOnly: true,
                                   ),
@@ -324,7 +321,6 @@ class _DeliveryTabState extends State<DeliveryTab> {
                         item: Input(
                           text: 'Ваш комментарий к заказу',
                           multilined: true,
-                          error: !validComment,
                           controller: comment,
                         ),
                         width: 150,
