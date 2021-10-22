@@ -225,7 +225,7 @@ class _DeliveryTabState extends State<DeliveryTab> {
                                 Flexible(
                                   flex: 8,
                                   child: Input(
-                                    text: 'кв.',
+                                    text: 'кв./офис',
                                     controller: flat,
                                     numericOnly: true,
                                   ),
