@@ -33,7 +33,7 @@ String getAddress(
     TextEditingController flat,
     {bool? forQuery}) {
   return forQuery == true
-      ? "Россия, ${city.text}, ул. ${street.text}, ${building.text}"
+      ? "${city.text}, ${street.text}, ${building.text}"
       : "Россия, город ${city.text}, улица ${street.text}, " +
           "дом ${building.text}" +
           (door.text != '' ? ', ${door.text} подъезд' : '') +
